@@ -1,5 +1,8 @@
 import axios from "axios";
 import { API_BASE_URL } from "./constants";
+import { useEffect, useState } from "react";
+
+
 
 const instance = axios.create({
     baseURL: API_BASE_URL+"api",
@@ -12,6 +15,17 @@ const instance = axios.create({
     //     'Content-Type': 'application/json',
     // },
 });
+
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 instance.interceptors.response.use(
     res => res,

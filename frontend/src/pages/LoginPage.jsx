@@ -25,7 +25,7 @@ const LoginPage = () => {
         setError("");
 
         try {
-            const res = await axios.post("/login", form);
+            const res = await axios.post("/admin/login", form);
             const { token, user } = res.data;
 
             // Simpan token ke axios header

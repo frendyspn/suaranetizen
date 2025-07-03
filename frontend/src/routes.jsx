@@ -4,6 +4,9 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminLayout from './layouts/AdminLayout';
 
+import DonasiList from './pages/admin/DonasiList';
+import DonasiForm from './pages/admin/DonasiForm';
+
 const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('token');
     return token ? children : <Navigate to="/login" />;
@@ -23,6 +26,9 @@ const AppRoutes = () => (
                     </PrivateRoute>
                 }
             />
+            <Route path="/admin/donasi" element={<AdminLayout><DonasiList /></AdminLayout>} />
+            <Route path="/admin/donasi/create" element={<AdminLayout><DonasiForm /></AdminLayout>} />
+            <Route path="/admin/donasi/:id/edit" element={<AdminLayout><DonasiForm /></AdminLayout>} />
         </Routes>
     </BrowserRouter>
 );
