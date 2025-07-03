@@ -18,7 +18,7 @@ const LoginPage = () => {
         if (token) {
             navigate("/admin/dashboard");
         }
-    }, []);
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
