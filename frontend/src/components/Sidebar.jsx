@@ -27,11 +27,16 @@ export default function Sidebar() {
         <div className="p-20 pt-10">
             <ul className="sidebar-menu">
                 <li className="sidebar-menu__item has-dropdown">
-                    <a href="javascript:void(0)" className="sidebar-menu__link">
-                        <span className="icon"><i className="ph ph-squares-four"></i></span>
-                        <span className="text">Dashboard</span>
-                        <span className="link-badge">3</span>
-                    </a>
+                    <button
+                                type="button"
+                                className="sidebar-menu__link"
+                                style={{ background: "none", border: "none", padding: 0, width: "100%", textAlign: "left" }}
+                                // Add dropdown toggle logic if needed
+                            >
+                                <span className="icon"><i className="ph ph-squares-four"></i></span>
+                                <span className="text">Dashboard</span>
+                                <span className="link-badge">3</span>
+                            </button>
                     
                     <ul className="sidebar-submenu">
                         <li className="sidebar-submenu__item">
