@@ -11,7 +11,7 @@ const LoginPage = () => {
 
     // const { setUser } = useAuth();
     const navigate = useNavigate();
-    const [setting, setSetting] = useState(null);
+    // const [setting, setSetting] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -26,7 +26,7 @@ const LoginPage = () => {
 
         try {
             const res = await axios.post("/admin/login", form);
-            const { token, user } = res.data;
+            const { token } = res.data;
 
             // Simpan token ke axios header
             
