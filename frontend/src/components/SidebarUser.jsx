@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from '../axios';
 
-export default function Sidebar() {
+export default function SidebarUser() {
     const handleLogout = async () => {
     try {
         await axios.post('/admin/logout'); // gunakan baseURL sudah /api
@@ -60,13 +60,6 @@ export default function Sidebar() {
                     <a href="/admin/donasi" className="sidebar-menu__link">
                         <span className="icon"><i className="ph ph-gear"></i></span>
                         <span className="text">Donasi</span>
-                    </a>
-                </li>
-
-                <li className="sidebar-menu__item">
-                    <a href="/admin/kategori" className="sidebar-menu__link">
-                        <span className="icon"><i className="ph ph-gear"></i></span>
-                        <span className="text">Kategori</span>
                     </a>
                 </li>
 

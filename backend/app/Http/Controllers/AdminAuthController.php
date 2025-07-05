@@ -44,4 +44,6 @@ class AdminAuthController extends Controller
         $request->user()->tokens()->delete();
         return response()->json(['message' => 'Logged out']);
     }
+
+    
 }
