@@ -38,7 +38,7 @@ const HomePage = () => {
                 headers: { Authorization: `Bearer ${userToken}` }
             });
 
-            setDonasi(res.data.donasi);
+            
             navigate(`/polling/${res.data.polling.id}`);
             // Simulasikan QR muncul
             // setQrisImage('/assets/images/qris.jpg');
