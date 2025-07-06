@@ -22,7 +22,7 @@ const PollingDetailPage = () => {
         axios.get(`/user/polling/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         }).then(res => setPolling(res.data));
-    }, [id]);
+    }, [id, token]);
 
     useEffect(() => {
         if (orderId && statusCode && transactionStatus) {
@@ -30,7 +30,7 @@ const PollingDetailPage = () => {
             handleUpdateStatus();
             console.log('Ada parameter Midtrans:', { orderId, statusCode, transactionStatus });
         }
-    }, [orderId, statusCode, transactionStatus]);
+    }, [orderId, statusCode, transactionStatus, handleUpdateStatus]);
 
     const handleUpdateStatus = async () => {
 
