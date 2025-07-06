@@ -24,16 +24,7 @@ const PollingDetailPage = () => {
         }).then(res => setPolling(res.data));
     }, [id, token]);
 
-    useEffect(() => {
-        if (orderId && statusCode && transactionStatus) {
-            // Lakukan sesuatu, misal tampilkan notifikasi atau update status
-            handleUpdateStatus();
-            console.log('Ada parameter Midtrans:', { orderId, statusCode, transactionStatus });
-        }
-    }, [orderId, statusCode, transactionStatus, handleUpdateStatus]);
-
-    const handleUpdateStatus = async () => {
-
+    const handleUpdateStatus = useCallback(async () => {
         setLoading(true);
         try {
             const res = await axios.post(`/user/polling/${id}/update-status-payment`, { orderId, statusCode, transactionStatus }, {
@@ -45,7 +36,17 @@ const PollingDetailPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id, orderId, statusCode, transactionStatus, token]);
+
+    useEffect(() => {
+        if (orderId && statusCode && transactionStatus) {
+            // Lakukan sesuatu, misal tampilkan notifikasi atau update status
+            handleUpdateStatus();
+            console.log('Ada parameter Midtrans:', { orderId, statusCode, transactionStatus });
+        }
+    }, [orderId, statusCode, transactionStatus, handleUpdateStatus]);
+
+    
 
     const handleGenerateQris = async () => {
         // if (!nominal || parseInt(nominal) < 1000) {
