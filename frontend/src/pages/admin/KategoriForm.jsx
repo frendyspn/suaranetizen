@@ -18,7 +18,7 @@ const KategoriForm = () => {
                 setForm(res.data);
             });
         }
-    }, [id]);
+    }, [id, isEdit]);
 
     const handleChange = e => {
         const { name, value, type, checked } = e.target;

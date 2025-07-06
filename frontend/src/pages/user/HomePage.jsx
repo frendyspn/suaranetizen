@@ -7,11 +7,9 @@ import RegisterForm from './RegisterForm';
 
 const HomePage = () => {
     const [form, setForm] = useState({ kalimat: '', kategori_id: '' });
-    const [donasi, setDonasi] = useState(null);
     const [userToken, setUserToken] = useState(localStorage.getItem('user_token'));
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
-    const [qrisImage, setQrisImage] = useState(null);
     const [error, setError] = useState('');
     const [kategoriList, setKategoriList] = useState([]);
 
@@ -139,12 +137,7 @@ const HomePage = () => {
                 </div>
             )}
 
-            {qrisImage && (
-                <div className="mt-4 text-center">
-                    <h5>Silakan Scan QR untuk Donasi</h5>
-                    <img src={qrisImage} alt="QRIS" style={{ maxWidth: 300 }} />
-                </div>
-            )}
+            
         </div>
     );
 };

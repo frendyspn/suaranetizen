@@ -35,6 +35,7 @@ Route::prefix('user')->group(function () {
 
         Route::post('/polling', [PollingController::class, 'store']);
         Route::post('/polling/{id}/generate-qris', [PollingController::class, 'generateQris']);
+        Route::post('/polling/{id}/update-status-payment', [PollingController::class, 'updateStatusPayment']);
         Route::get('/polling/{id}', [PollingController::class, 'show']);
         Route::get('/donasi-aktif', [PollingController::class, 'donasiAktif']);
 

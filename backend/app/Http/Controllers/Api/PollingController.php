@@ -58,110 +58,37 @@ class PollingController extends Controller
         }
 
         $request->validate([
-            'nominal' => 'required|integer|min:1000',
+            'nominal' => 'required|integer|min:1',
         ]);
 
         if ($polling->id_payment) {
             return response()->json($polling);
         }
 
-        $payment = $this->midtrans($id, $request->nominal);
+        $payment = json_decode($this->midtrans($id, $request->nominal), true);
 
         // Simulasi request ke payment gateway (dummy)
         // $id_payment = 'PAY-' . strtoupper(Str::random(8));
         // $qris_url = 'https://dummy-qris.img/' . $id_payment . '.png';
 
-        // $polling->update([
-        //     'nominal' => $request->nominal,
-        //     'id_payment' => $payment->transaction_id, // Asumsi response dari Midtrans
-        //     'qris_url' => $payment->actions[0]->url, // Asumsi response dari Midtrans
-        // ]);
+        Polling::where('id', $id)->update([
+            'nominal' => (int)$request->nominal,
+            'id_payment' => $payment['token'], // Asumsi response dari Midtrans
+            'qris_url' => $payment['redirect_url'], // Asumsi response dari Midtrans
+        ]);
 
-        return response()->json($payment);
+        return response()->json($polling->refresh());
     }
 
-    public function doku($id, $nominal){
-
-        $method = 'POST';
-        $endpointUrl = '/snap-adapter/b2b/v1.0/qr/qr-mpm-generate';
-        $accessToken = 'your-access-token';
-        $timestamp = date('c'); // ISO8601 format (e.g. 2025-07-03T17:00:00+07:00)
-        $clientSecret = 'your-client-secret';
-
-        // Isi sesuai payload request
-        $requestBody = [
-            "partnerReferenceNo" => "a98757c8dbc6434ab5dd4c55d9092d9a",
-            "amount" => ["value" => "1000.00", "currency" => "IDR"],
-            "feeAmount" => ["value" => "500.00", "currency" => "IDR"],
-            "merchantId" => 2115,
-            "terminalId" => "k45",
-            "validityPeriod" => "2023-11-08T17:38:42+07:00",
-            "additionalInfo" => ["postalCode" => 13120, "feeType" => 2]
-        ];
-
-        $signature = generateDokuSignature($method, $endpointUrl, $accessToken, $requestBody, $timestamp, $clientSecret);
-
-        
-        $url = 'https://api-sandbox.doku.com/snap-adapter/b2b/v1.0/qr/qr-mpm-generate';
-
-        $headers = [
-            'Host: api-sandbox.doku.com',
-            'X-PARTNER-ID: MCH-0116-7101138079096',        // ← Ganti dengan Partner ID asli
-            'X-EXTERNAL-ID: '.$id,       // ← Ganti dengan External ID unik
-            'X-SIGNATURE: text',         // ← Ganti dengan Signature yang sesuai
-            'Authorization: text',       // ← Ganti dengan token Authorization
-            'Content-Type: application/json',
-            'Accept: */*'
-        ];
-
-        $body = [
-            "partnerReferenceNo" => "a98757c8dbc6434ab5dd4c55d9092d9a",
-            "amount" => [
-                "value" => "1000.00",
-                "currency" => "IDR"
-            ],
-            "feeAmount" => [
-                "value" => "500.00",
-                "currency" => "IDR"
-            ],
-            "merchantId" => 2115,
-            "terminalId" => "k45",
-            "validityPeriod" => "2023-11-08T17:38:42+07:00",
-            "additionalInfo" => [
-                "postalCode" => 13120,
-                "feeType" => 2
-            ]
-        ];
-
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
-
-        // Eksekusi request
-        $response = curl_exec($ch);
-
-        // Cek error
-        if (curl_errno($ch)) {
-            echo 'Error: ' . curl_error($ch);
-        } else {
-            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            echo "HTTP Code: $httpcode\n";
-            echo "Response:\n$response";
-        }
-
-        curl_close($ch);
-
-    }
-
+    
     public function midtrans($id_transaction, $nominal)
     {
-        $auth = base64_encode('SB-Mid-server-lAJbqhYva5K5H4zhaEKg-Odj:');
+        $auth = base64_encode(env('MIDTRANS_KEY') . ':'); // Ganti dengan MIDTRANS_KEY yang sesuai
+        
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.sandbox.midtrans.com/v2/charge',
+        CURLOPT_URL => 'https://app.midtrans.com/snap/v1/transactions',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -170,16 +97,17 @@ class PollingController extends Controller
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS =>'{
-            "payment_type": "gopay",
-            "transaction_details": {
-                "gross_amount": ' . $nominal . ',
-                "order_id": "' . $id_transaction . '"
-            },
-            "gopay": {
-                "enable_callback": true,
-                "callback_url": "someapps://callback"
-            },
-        ]
+        "transaction_details": {
+            "order_id": "' . $id_transaction . '",
+            "gross_amount": ' . $nominal . '
+        }, 
+        "credit_card": {
+            "secure": false
+        },
+        "enabled_payments": ["gopay"],
+        "callbacks": {
+            "finish": "http://localhost:3000/polling/' . $id_transaction . '"
+        }
         }',
         CURLOPT_HTTPHEADER => array(
             'Accept: application/json',
@@ -191,12 +119,45 @@ class PollingController extends Controller
         $response = curl_exec($curl);
 
         curl_close($curl);
-
+        
         $polling = Polling::findOrFail($id_transaction);
         $polling->update([
-            'payment_response' => $response, // Simpan response lengkap
+            'payment_response' => json_encode($response), // Simpan response lengkap
         ]);
         return $response;
 
+    }
+
+    public function updateStatusPayment(Request $request, $id)
+    {
+        
+        $polling = Polling::findOrFail($id);
+
+        if ($polling->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if ($id !== $request->orderId) {
+            return response()->json($polling->refresh());
+        }
+
+        $request->validate([
+            'orderId' => 'required|string',
+            'statusCode' => 'required|string',
+            'transactionStatus' => 'required|string',
+        ]);
+
+        // Simulasi update status pembayaran
+        // Di sini kamu bisa melakukan pengecekan status pembayaran dari Midtrans atau payment gateway lainnya
+
+        if ($request->statusCode == '200') {
+            if ($request->transactionStatus == 'settlement') {
+                Polling::where('id', $id)->update([
+                    'status' => 'paid',
+                ]);
+            }
+        }
+
+        return response()->json($polling->refresh());
     }
 }
