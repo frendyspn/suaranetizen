@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from '../../axios';
 
 const PollingDetailPage = () => {
@@ -9,6 +9,8 @@ const PollingDetailPage = () => {
     const [nominal, setNominal] = useState('');
     const [loading, setLoading] = useState(false);
     const token = localStorage.getItem('user_token');
+
+    const navigate = useNavigate();
 
     // Ambil parameter dari query string
     const searchParams = new URLSearchParams(location.search);
@@ -30,13 +32,15 @@ const PollingDetailPage = () => {
             const res = await axios.post(`/user/polling/${id}/update-status-payment`, { orderId, statusCode, transactionStatus }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setPolling(res.data);
+            // setPolling(res.data);
+            console.log('Status updated:', res.data);
+            navigate(`/quote/${res.data?.donasi_id}`);
         } catch (err) {
             alert('Gagal Update data');
         } finally {
             setLoading(false);
         }
-    }, [id, orderId, statusCode, transactionStatus, token]);
+    }, [id, orderId, statusCode, transactionStatus, token, navigate]);
 
     useEffect(() => {
         if (orderId && statusCode && transactionStatus) {

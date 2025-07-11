@@ -7,7 +7,7 @@ import RegisterForm from './RegisterForm';
 
 const HomePage = () => {
     const [form, setForm] = useState({ kalimat: '', kategori_id: '' });
-    const [userToken, setUserToken] = useState(localStorage.getItem('user_token'));
+    const [userToken, setUserToken] = useState(localStorage.getItem('token'));
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
     const [error, setError] = useState('');
@@ -43,25 +43,34 @@ const HomePage = () => {
             // Simulasikan QR muncul
             // setQrisImage('/assets/images/qris.jpg');
         } catch (err) {
+            console.log(err.response);
+            if (err.response?.status === 401) {
+                localStorage.setItem('user_token', '');
+                setUserToken(null);
+                setError('silakan login kembali');
+                setShowLogin(true);
+                return;
+            }
             setError(err.response?.data?.message || 'Gagal submit polling');
         }
     };
 
     const handleLogin = async (email, password) => {
+        setError('');
         try {
             const res = await axios.post('/user/login', { email, password });
             const token = res.data.token;
-            localStorage.setItem('user_token', token);
+            localStorage.setItem('token', token);
             setUserToken(token);
             setShowLogin(false);
         } catch (err) {
-            alert('Login gagal');
+            setError(err.response?.data?.message || 'Gagal submit polling');
         }
     };
 
     return (
         <div className="container">
-            <h3>Kirim Polling</h3>
+            <h3>Kirim Polling </h3>
 
             {error && <div className="alert alert-danger">{error}</div>}
 

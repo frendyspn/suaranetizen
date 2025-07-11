@@ -12,6 +12,7 @@ import KategoriForm from './pages/admin/KategoriForm';
 
 import HomePage from './pages/user/HomePage';
 import PollingDetailPage from './pages/user/PollingDetailPage';
+import QuotePage from './pages/user/QuotePage';
 
 const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('token');
@@ -55,6 +56,30 @@ const AppRoutes = () => (
                     </PrivateRoute>
                 }
             />
+            <Route
+                index
+                path="/quote/:id"
+                element={
+                    <PrivateRoute>
+                        <UserLayout>
+                            <QuotePage />
+                        </UserLayout>
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                index
+                path="/quotes"
+                element={
+                    <PrivateRoute>
+                        <UserLayout>
+                            <QuotePage />
+                        </UserLayout>
+                    </PrivateRoute>
+                }
+            />
+
             <Route
                 path="/home"
                 element={

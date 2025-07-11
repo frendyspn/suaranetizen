@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Donasi;
+use App\Models\Polling;
 
 class DonasiController extends Controller
 {
@@ -72,6 +73,33 @@ class DonasiController extends Controller
         ];
 
         $donasi->update($data);
+        return response()->json($donasi);
+    }
+
+    public function publicShow(string $id)
+    {
+        if ($id !== 'undefined') {
+            $donasi = Donasi::findOrFail($id);
+        } else {
+            $donasi = Donasi::where('status', 'onprogress')->first();
+        }
+        
+        
+        
+        if (!$donasi->is_active) {
+            return response()->json(['message' => 'Donasi tidak aktif'], 404);
+        }
+
+        $polling = Polling::where('donasi_id', $donasi->id)
+            ->where('status', 'paid')
+            ->with('kategori')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        
+
+        $donasi->polling = $polling;
+
         return response()->json($donasi);
     }
 }

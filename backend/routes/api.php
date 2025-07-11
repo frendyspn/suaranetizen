@@ -28,6 +28,8 @@ Route::prefix('user')->group(function () {
     Route::post('/login', [UserAuthController::class, 'login']);
 
     Route::post('/register', [UserAuthController::class, 'register']);
+
+    Route::get('/kategori', [KategoriController::class, 'publicList']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [UserAuthController::class, 'me']);
@@ -39,7 +41,7 @@ Route::prefix('user')->group(function () {
         Route::get('/polling/{id}', [PollingController::class, 'show']);
         Route::get('/donasi-aktif', [PollingController::class, 'donasiAktif']);
 
-        Route::get('/kategori', [KategoriController::class, 'publicList']);
+        Route::get('/quote/{id}', [DonasiController::class, 'publicShow']);
 
     });
 });

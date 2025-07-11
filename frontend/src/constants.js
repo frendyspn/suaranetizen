@@ -3,3 +3,5 @@
 export const API_BASE_URL = "http://192.168.100.18:8000/"; // Replace with your actual API base URL
 
 export const STORAGE_URL = `${API_BASE_URL}storage/`;
+
+export const WEB_NAME = "suaranetizen.id";
