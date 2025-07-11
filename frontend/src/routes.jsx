@@ -49,22 +49,20 @@ const AppRoutes = () => (
                 index
                 path="/"
                 element={
-                    <PrivateRoute>
-                        <UserLayout>
-                            <HomePage />
-                        </UserLayout>
-                    </PrivateRoute>
+                    <UserLayout>
+                        <HomePage />
+                    </UserLayout>
+
                 }
             />
             <Route
                 index
                 path="/quote/:id"
                 element={
-                    <PrivateRoute>
-                        <UserLayout>
-                            <QuotePage />
-                        </UserLayout>
-                    </PrivateRoute>
+                    <UserLayout>
+                        <QuotePage />
+                    </UserLayout>
+
                 }
             />
 
@@ -72,33 +70,30 @@ const AppRoutes = () => (
                 index
                 path="/quotes"
                 element={
-                    <PrivateRoute>
-                        <UserLayout>
-                            <QuotePage />
-                        </UserLayout>
-                    </PrivateRoute>
+                    <UserLayout>
+                        <QuotePage />
+                    </UserLayout>
+
                 }
             />
 
             <Route
                 path="/home"
                 element={
-                    <PrivateRoute>
-                        <UserLayout>
-                            <HomePage />
-                        </UserLayout>
-                    </PrivateRoute>
+                    <UserLayout>
+                        <HomePage />
+                    </UserLayout>
+
                 }
             />
 
             <Route
                 path="/polling/:id"
                 element={
-                    <PrivateRoute>
-                        <UserLayout>
-                            <PollingDetailPage />
-                        </UserLayout>
-                    </PrivateRoute>
+                    <UserLayout>
+                        <PollingDetailPage />
+                    </UserLayout>
+
                 }
             />
 
