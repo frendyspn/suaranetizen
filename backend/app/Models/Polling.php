@@ -32,4 +32,9 @@ class Polling extends Model
     public function kategori() {
         return $this->belongsTo(Kategori::class);
     }
+
+    public function pollingVotes()
+    {
+        return $this->hasMany(PollingVote::class, 'id_polling', 'id')->where('nilai', 1);
+    }
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback} from 'react';
 import { useParams } from 'react-router-dom';
 import axios from '../../axios';
 import { WEB_NAME } from '../../constants';
-import formatCurrency from '../../utils/formatCurrency';
+import {formatCurrency, formatCurrencyPrefix} from '../../utils/formatCurrency';
 
 const QuotePage = () => {
     const { id } = useParams();
@@ -67,15 +67,38 @@ const QuotePage = () => {
                         <div className='dataQuote p-3'>
                             <p>Pesan / Quote Terpilih Berdasarkan Hasil Polling</p>
                             {
-                                dataDonasi?.polling?.map((item, index) => (
-                                    <div key={index} className='border-bottom pb-2 mb-5'>
-                                        <p className='mb-1'>{item.kalimat}</p>
-                                        <div class="d-flex gap-8 flex-column pe-8">
-                                            <div class="progress w-100 bg-info-100 rounded-pill h-10" role="progressbar" aria-label="Basic example" >
-                                                <div class="progress-bar bg-info-600 rounded-pill" style={{ width: `100%` }}></div>
+                                dataDonasi?.polling?.map((polling, index) => (
+                                    <div
+                                                key={index}
+                                                className={`flex-align gap-8 mb-5 border-bottom pb-5 bg-main-100}`}
+                                                style={{ cursor: 'pointer' }}
+                                                
+                                            >
+                                                <div className={`w-40 h-40 rounded-circle bg-primary-600 flex-center flex-shrink-0`}>
+                                                    <span className="text-white text-18">{index+1}</span>
+                                                </div>
+                                                <div>
+                                                    <h6 className="mb-0">{polling?.kalimat}</h6>
+                                                    {polling?.kategori && (
+                                                        <div className="table-list">
+                                                            <span className="text-13 text-gray-600">{polling?.kategori}</span>
+                                                        </div>
+                                                    )}
+                                                    <div className="table-list">
+                                                        <span className="text-13 text-gray-600">Quote dari <strong>{polling?.user?.name}</strong></span>
+                                                        <span className="text-13 text-gray-600">{formatCurrencyPrefix(polling?.polling_votes_count)} Netizen Memilih Ini</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
+
+                                    // <div key={index} className='border-bottom pb-2 mb-5'>
+                                    //     <p className='mb-1'>{item.kalimat}</p>
+                                    //     <div class="d-flex gap-8 flex-column pe-8">
+                                    //         <div class="progress w-100 bg-info-100 rounded-pill h-10" role="progressbar" aria-label="Basic example" >
+                                    //             <div class="progress-bar bg-info-600 rounded-pill" style={{ width: `100%` }}></div>
+                                    //         </div>
+                                    //     </div>
+                                    // </div>
                                 ))
                             }
                         </div>

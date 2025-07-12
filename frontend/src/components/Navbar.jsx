@@ -8,6 +8,10 @@ const Navbar = () => {
 
                 <a href="/" type="button" className="text-gray-500">Home</a>
 
+                <a href="/pollings" type="button" className="text-gray-500">Polling</a>
+
+                <a href="/result" type="button" className="text-gray-500">Hasil Polling</a>
+
                 <a href="/quotes" type="button" className="text-gray-500">Pesan/Quote Terbit</a>
                 
                 {/* <form action="#" className="w-350 d-sm-block d-none">

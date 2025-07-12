@@ -13,6 +13,8 @@ import KategoriForm from './pages/admin/KategoriForm';
 import HomePage from './pages/user/HomePage';
 import PollingDetailPage from './pages/user/PollingDetailPage';
 import QuotePage from './pages/user/QuotePage';
+import PollingPage from './pages/user/PollingPage';
+import ResultPollingPage from './pages/user/ResultPollingPage';
 
 const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('token');
@@ -82,6 +84,26 @@ const AppRoutes = () => (
                 element={
                     <UserLayout>
                         <HomePage />
+                    </UserLayout>
+
+                }
+            />
+
+            <Route
+                path="/pollings"
+                element={
+                    <UserLayout>
+                        <PollingPage />
+                    </UserLayout>
+
+                }
+            />
+
+            <Route
+                path="/result"
+                element={
+                    <UserLayout>
+                        <ResultPollingPage />
                     </UserLayout>
 
                 }

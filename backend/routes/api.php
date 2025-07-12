@@ -30,6 +30,12 @@ Route::prefix('user')->group(function () {
     Route::post('/register', [UserAuthController::class, 'register']);
 
     Route::get('/kategori', [KategoriController::class, 'publicList']);
+
+    Route::get('/pollings', [PollingController::class, 'showPollings']);
+
+    Route::get('/result-pollings', [PollingController::class, 'resultPollings']);
+
+    Route::get('/quote/{id}', [DonasiController::class, 'publicShow']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [UserAuthController::class, 'me']);
@@ -40,8 +46,12 @@ Route::prefix('user')->group(function () {
         Route::post('/polling/{id}/update-status-payment', [PollingController::class, 'updateStatusPayment']);
         Route::get('/polling/{id}', [PollingController::class, 'show']);
         Route::get('/donasi-aktif', [PollingController::class, 'donasiAktif']);
+        
+        
 
-        Route::get('/quote/{id}', [DonasiController::class, 'publicShow']);
+        Route::post('/polling-vote', [PollingController::class, 'vote']);
+
+        
 
     });
 });

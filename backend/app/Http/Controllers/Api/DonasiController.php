@@ -91,15 +91,38 @@ class DonasiController extends Controller
         }
 
         $polling = Polling::where('donasi_id', $donasi->id)
+            ->withCount('pollingVotes')
             ->where('status', 'paid')
             ->with('kategori')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('polling_votes_count', 'desc')
             ->get();
+
+        $polling->transform(function ($polling) {
+            if ($polling->user && $polling->user->name) {
+                $polling->user->name = $this->maskName($polling->user->name);
+            }
+            $polling->polling_votes = 1; // tambahkan properti polling_votes = 1
+            return $polling;
+        });
 
         
 
         $donasi->polling = $polling;
 
         return response()->json($donasi);
+    }
+
+    private function maskName($name)
+    {
+        // Pisahkan nama berdasarkan spasi
+        $parts = explode(' ', $name);
+        $masked = array_map(function($part) {
+            $len = mb_strlen($part);
+            if ($len <= 2) return $part; // Tidak perlu masking
+            return mb_substr($part, 0, 1)
+                . str_repeat('*', $len - 2)
+                . mb_substr($part, -1, 1);
+        }, $parts);
+        return implode(' ', $masked);
     }
 }

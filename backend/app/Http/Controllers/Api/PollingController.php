@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Donasi;
 use App\Models\Polling;
+use App\Models\PollingVote;
+use Laravel\Sanctum\PersonalAccessToken;
+use App\Models\User;
 
 class PollingController extends Controller
 {
@@ -159,5 +162,114 @@ class PollingController extends Controller
         }
 
         return response()->json($polling->refresh());
+    }
+
+    public function showPollings(Request $request)
+    {
+        $authHeader = $request->header('Authorization');
+        $user = null;
+
+        if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            $accessToken = $matches[1];
+            $token = PersonalAccessToken::findToken($accessToken);
+            if ($token) {
+                $user = $token->tokenable;
+            }
+        }
+        
+        $dataPolling = Polling::with('kategori','user')
+            ->withCount('pollingVotes')
+            ->where('status', 'paid');
+
+        if ($user) {
+            $votedIds = PollingVote::where('user_id', $user->id)->pluck('id_polling')->toArray();
+            
+            $pollings = $dataPolling->whereNotIn('id', $votedIds)->whereNot('user_id', $user->id)->get();
+        } else {
+            $pollings = $dataPolling->get();
+        }
+
+        $pollings->transform(function ($polling) {
+            if ($polling->user && $polling->user->name) {
+                $polling->user->name = $this->maskName($polling->user->name);
+            }
+            $polling->polling_votes = 1; // tambahkan properti polling_votes = 1
+            return $polling;
+        });
+
+        
+
+        // Sensor nama user
+        $pollings->transform(function ($polling) {
+            if ($polling->user && $polling->user->name) {
+                $polling->user->name = $this->maskName($polling->user->name);
+            }
+            return $polling;
+        });
+
+        return response()->json($pollings);
+    }
+
+
+    public function resultPollings(Request $request)
+    {
+        
+        $pollings = Polling::with('kategori','user')
+            ->withCount('pollingVotes')
+            ->where('status', 'paid')
+            ->limit(5)
+            ->get();
+        
+        $pollings->transform(function ($polling) {
+            if ($polling->user && $polling->user->name) {
+                $polling->user->name = $this->maskName($polling->user->name);
+            }
+            $polling->polling_votes = 1; // tambahkan properti polling_votes = 1
+            return $polling;
+        });
+
+
+        return response()->json($pollings);
+    }
+
+    private function maskName($name)
+    {
+        // Pisahkan nama berdasarkan spasi
+        $parts = explode(' ', $name);
+        $masked = array_map(function($part) {
+            $len = mb_strlen($part);
+            if ($len <= 2) return $part; // Tidak perlu masking
+            return mb_substr($part, 0, 1)
+                . str_repeat('*', $len - 2)
+                . mb_substr($part, -1, 1);
+        }, $parts);
+        return implode(' ', $masked);
+    }
+
+    public function vote(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->all();
+
+        // Validasi: pastikan data array dan setiap item punya id_polling & nilai
+        $request->validate([
+            '*.id_polling' => 'required|exists:pollings,id',
+            '*.nilai'      => 'required|boolean',
+        ]);
+
+        foreach ($data as $item) {
+            PollingVote::updateOrCreate(
+                [
+                    'id_polling' => $item['id_polling'],
+                    'user_id'    => $user->id,
+                ],
+                [
+                    'nilai'      => $item['nilai'],
+                ]
+            );
+        }
+
+        return response()->json(['message' => 'Vote berhasil disimpan']);
     }
 }
