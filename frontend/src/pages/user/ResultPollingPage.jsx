@@ -1,8 +1,6 @@
-import React, { useEffect, useState, useCallback, use } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from '../../axios';
 import { WEB_NAME } from '../../constants';
-import LoginForm from '../../pages/user/LoginForm';
 import ErrorModal from '../../components/ErrorModal';
 import SuccessModal from '../../components/SuccessModal';
 import formatCurrencyPrefix from '../../utils/formatCurrency';
@@ -10,12 +8,9 @@ import formatCurrencyPrefix from '../../utils/formatCurrency';
 
 const ResultPollingPage = () => {
     const [dataPolling, setDataPolling] = useState([]);
-    const [selectedPollingIds, setSelectedPollingIds] = useState([]); // array untuk multiple select
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [showLoginForm, setShowLoginForm] = useState(false);
-    const navigate = useNavigate();
-
+    
     const handleGetPolling = useCallback(async () => {
         try {
             const res = await axios.get('/user/result-pollings');
