@@ -9,6 +9,11 @@ use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\Api\PollingController;
 use App\Http\Controllers\Api\KategoriController;
 
+use App\Http\Controllers\Api\IntroductionController;
+use App\Http\Controllers\Api\BannerController;
+
+use App\Http\Controllers\Api\AboutController;
+
 Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login']);
 
@@ -20,6 +25,13 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('/donasi', DonasiController::class);
 
         Route::apiResource('kategori', KategoriController::class);
+
+        Route::put('/introduction', [IntroductionController::class, 'update']);
+
+        Route::get('/banners', [BannerController::class, 'index']);
+        Route::post('/banners', [BannerController::class, 'store']);
+
+        Route::put('/about', [AboutController::class,'update']);
     });
 });
 
@@ -36,6 +48,12 @@ Route::prefix('user')->group(function () {
     Route::get('/result-pollings', [PollingController::class, 'resultPollings']);
 
     Route::get('/quote/{id}', [DonasiController::class, 'publicShow']);
+
+    Route::get('/introduction',  [IntroductionController::class, 'show']);
+
+    Route::get('/banner-active', [BannerController::class,'showActive']); 
+
+    Route::get('/about', [AboutController::class,'show']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [UserAuthController::class, 'me']);

@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from '../../axios';
 import { WEB_NAME } from '../../constants';
-import {formatCurrency, formatCurrencyPrefix} from '../../utils/formatCurrency';
+import { formatCurrency, formatCurrencyPrefix } from '../../utils/formatCurrency';
 
 const QuotePage = () => {
     const { id } = useParams();
@@ -12,7 +12,7 @@ const QuotePage = () => {
     const [progress, setProgress] = useState(0);
 
     const [error, setError] = useState('');
-    
+
     const handleGetDonasi = useCallback(async () => {
         try {
             const res = await axios.get('/user/quote/' + id);
@@ -38,17 +38,17 @@ const QuotePage = () => {
         handleGetDonasi();
     }, [handleGetDonasi]);
 
-    
+
 
     return (
         <div className="rounded p-5" style={{ backgroundColor: '#3053a7' }}>
             {error && (
-            <div className="alert alert-danger mb-3">
-                {error}
-            </div>
-        )}
+                <div className="alert alert-danger mb-3">
+                    {error}
+                </div>
+            )}
             <div className='row'>
-                <div className='col-4 text-center' style={{alignContent: 'center'}}>
+                <div className='col-4 text-center' style={{ alignContent: 'center' }}>
                     <span className='text-white'>Join At</span>
                     <h4 className='text-white'>{WEB_NAME}</h4>
                 </div>
@@ -69,27 +69,27 @@ const QuotePage = () => {
                             {
                                 dataDonasi?.polling?.map((polling, index) => (
                                     <div
-                                                key={index}
-                                                className={`flex-align gap-8 mb-5 border-bottom pb-5 bg-main-100}`}
-                                                style={{ cursor: 'pointer' }}
-                                                
-                                            >
-                                                <div className={`w-40 h-40 rounded-circle bg-primary-600 flex-center flex-shrink-0`}>
-                                                    <span className="text-white text-18">{index+1}</span>
+                                        key={index}
+                                        className={`flex-align gap-8 mb-5 border-bottom pb-5 bg-main-100}`}
+                                        style={{ cursor: 'pointer' }}
+
+                                    >
+                                        <div className={`w-40 h-40 rounded-circle bg-primary-600 flex-center flex-shrink-0`}>
+                                            <span className="text-white text-18">{index + 1}</span>
+                                        </div>
+                                        <div>
+                                            <h6 className="mb-0">{polling?.kalimat}</h6>
+                                            {polling?.kategori && (
+                                                <div className="table-list">
+                                                    <span className="text-13 text-gray-600">{polling?.kategori}</span>
                                                 </div>
-                                                <div>
-                                                    <h6 className="mb-0">{polling?.kalimat}</h6>
-                                                    {polling?.kategori && (
-                                                        <div className="table-list">
-                                                            <span className="text-13 text-gray-600">{polling?.kategori}</span>
-                                                        </div>
-                                                    )}
-                                                    <div className="table-list">
-                                                        <span className="text-13 text-gray-600">Quote dari <strong>{polling?.user?.name}</strong></span>
-                                                        <span className="text-13 text-gray-600">{formatCurrencyPrefix(polling?.polling_votes_count)} Netizen Memilih Ini</span>
-                                                    </div>
-                                                </div>
+                                            )}
+                                            <div className="table-list">
+                                                <span className="text-13 text-gray-600">Quote dari <strong>{polling?.user?.name}</strong></span>
+                                                <span className="text-13 text-gray-600">{formatCurrencyPrefix(polling?.polling_votes_count)} Netizen Memilih Ini</span>
                                             </div>
+                                        </div>
+                                    </div>
 
                                     // <div key={index} className='border-bottom pb-2 mb-5'>
                                     //     <p className='mb-1'>{item.kalimat}</p>

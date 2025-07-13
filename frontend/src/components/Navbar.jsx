@@ -1,18 +1,24 @@
 import React from 'react';
+import HeaderBanner from '../components/HeaderBanner';
 
 const Navbar = () => {
     return (
-        <div className="flex-align gap-16">
+        <div className="navbar d-block justify-content-between align-items-center p-3 bg-light">
+        <HeaderBanner/>
+        
+        <div className="flex-align gap-16 menu-scroll">
                 
                 {/* <button type="button" className="toggle-btn d-xl-none d-flex text-26 text-gray-500"><i className="ph ph-list"></i></button> */}
 
                 <a href="/" type="button" className="text-gray-500">Home</a>
 
+                <a href="/about" type="button" className="text-gray-500">About Us</a>
+
                 <a href="/pollings" type="button" className="text-gray-500">Polling</a>
 
-                <a href="/result" type="button" className="text-gray-500">Hasil Polling</a>
+                <a href="/result" type="button" className="text-gray-500">Result</a>
 
-                <a href="/quotes" type="button" className="text-gray-500">Pesan/Quote Terbit</a>
+                <a href="/quotes" type="button" className="text-gray-500">Quote Terbit</a>
                 
                 {/* <form action="#" className="w-350 d-sm-block d-none">
                     <div className="position-relative">
@@ -20,7 +26,8 @@ const Navbar = () => {
                         <input type="text" className="form-control ps-40 h-40 border-transparent focus-border-main-600 bg-main-50 rounded-pill placeholder-15" placeholder="Search..." />
                     </div>
                 </form> */}
-            </div>
+        </div>
+        </div>
     );
 };
 

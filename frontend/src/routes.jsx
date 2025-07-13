@@ -16,6 +16,17 @@ import QuotePage from './pages/user/QuotePage';
 import PollingPage from './pages/user/PollingPage';
 import ResultPollingPage from './pages/user/ResultPollingPage';
 
+import PengantarForm from './pages/admin/PengantarForm';
+
+import BannerList from './pages/admin/BannerList';
+import BannerForm from './pages/admin/BannerForm';
+
+import AboutForm from './pages/admin/AboutForm';
+import AboutPage from './pages/user/AboutPage';
+
+
+
+
 const PrivateRoute = ({ children }) => {
     const token = localStorage.getItem('token');
     return token ? children : <Navigate to="/login" />;
@@ -42,8 +53,15 @@ const AppRoutes = () => (
             <Route path="/admin/kategori" element={<AdminLayout><KategoriList /></AdminLayout>} />
             <Route path="/admin/kategori/create" element={<AdminLayout><KategoriForm /></AdminLayout>} />
             <Route path="/admin/kategori/:id/edit" element={<AdminLayout><KategoriForm /></AdminLayout>} />
+            
+            
+            <Route path="/admin/pengantar" element={<AdminLayout><PengantarForm /></AdminLayout>} />
 
+            <Route path="/admin/banners" element={<AdminLayout><BannerList/></AdminLayout>}/>
+            <Route path="/admin/banner/create" element={<AdminLayout><BannerForm/></AdminLayout>}/>
+            <Route path="/admin/banner/:id/edit" element={<AdminLayout><BannerForm/></AdminLayout>}/>
 
+            <Route path="/admin/about" element={<AdminLayout><AboutForm /></AdminLayout>} />
 
 
             {/* USER */}
@@ -114,6 +132,16 @@ const AppRoutes = () => (
                 element={
                     <UserLayout>
                         <PollingDetailPage />
+                    </UserLayout>
+
+                }
+            />
+
+            <Route
+                path="/about"
+                element={
+                    <UserLayout>
+                        <AboutPage />
                     </UserLayout>
 
                 }

@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 
+import { WEB_NAME } from '../../constants';
+
 const HomePage = () => {
     const [form, setForm] = useState({ kalimat: '', kategori_id: '' });
     const [userToken, setUserToken] = useState(localStorage.getItem('token'));
@@ -13,12 +15,16 @@ const HomePage = () => {
     const [error, setError] = useState('');
     const [kategoriList, setKategoriList] = useState([]);
 
+    const [pengantar, setPengantar] = useState('');
+
     const navigate = useNavigate();
 
     useEffect(() => {
         axios.get('/user/kategori').then(res => {
             setKategoriList(res.data);
         });
+
+        axios.get('/user/introduction').then(res => setPengantar(res.data?.content || ''));
     }, []);
 
     const handleChange = e => {
@@ -38,7 +44,7 @@ const HomePage = () => {
                 headers: { Authorization: `Bearer ${userToken}` }
             });
 
-            
+
             navigate(`/polling/${res.data.polling.id}`);
             // Simulasikan QR muncul
             // setQrisImage('/assets/images/qris.jpg');
@@ -69,84 +75,105 @@ const HomePage = () => {
     };
 
     return (
-        <div className="container">
-            <h3>Kirim Polling </h3>
-
-            {error && <div className="alert alert-danger">{error}</div>}
-
-            <textarea
-                name="kalimat"
-                placeholder="Tulis polling anda..."
-                className="form-control mb-2"
-                value={form.kalimat}
-                onChange={handleChange}
-            />
-            <select
-                name="kategori_id"
-                className="form-select mb-3"
-                value={form.kategori_id}
-                onChange={handleChange}
-            >
-                <option value="">Pilih Kategori</option>
-                {kategoriList.map(k => (
-                    <option key={k.id} value={k.id}>
-                        {k.nama}
-                    </option>
-                ))}
-                {/* Dinamis jika kamu punya API kategori */}
-            </select>
-            <button className="btn btn-success" onClick={handleSubmitPolling}>
-                Donasi & Kirim Polling
-            </button>
-
-            {!userToken && (
-                <div className="card mt-4 p-3">
-                    {showLogin && (
-                        <>
-                            <h5>Login</h5>
-                            <LoginForm onLogin={handleLogin} />
-                            <div className="mt-2">
-                                Belum punya akun?{' '}
-                                <button
-                                    className="btn-link p-0"
-                                    onClick={() => {
-                                        setShowRegister(true);
-                                        setShowLogin(false);
-                                    }}
-                                >
-                                    Daftar di sini
-                                </button>
-                            </div>
-                        </>
-                    )}
-
-                    {showRegister && (
-                        <>
-                            <h5>Registrasi</h5>
-                            <RegisterForm
-                                onSuccess={(token) => {
-                                    setUserToken(token);
-                                    setShowRegister(false);
-                                }}
-                            />
-                            <div className="mt-2">
-                                Sudah punya akun?{' '}
-                                <button
-                                    className="btn-link p-0"
-                                    onClick={() => {
-                                        setShowLogin(true);
-                                        setShowRegister(false);
-                                    }}
-                                >
-                                    Login di sini
-                                </button>
-                            </div>
-                        </>
-                    )}
-                </div>
-            )}
-
+        <div className="rounded p-5" style={{ backgroundColor: '#3053a7' }}>
             
+            <div className='row'>
+                <div className='col-4 text-center' style={{ alignContent: 'center' }}>
+                    <h4 className='text-white'>{WEB_NAME}</h4>
+                    <div className='text-white' dangerouslySetInnerHTML={{ __html: pengantar }} />
+                </div>
+                <div className='col-8'>
+                    <div className='bg-white rounded m-5 p-3'>
+                        <h5 className='mt-5'>Kirim Polling </h5>
+{error && <div className="alert alert-danger">{error}</div>}
+                        <select
+                            name="kategori_id"
+                            className="form-select mb-3"
+                            value={form.kategori_id}
+                            onChange={handleChange}
+                        >
+                            <option value="">Pilih Kategori</option>
+                            {kategoriList.map(k => (
+                                <option key={k.id} value={k.id}>
+                                    {k.nama}
+                                </option>
+                            ))}
+                            {/* Dinamis jika kamu punya API kategori */}
+                        </select>
+
+                        <textarea
+                            name="kalimat"
+                            placeholder="Tulis polling anda..."
+                            className="form-control mb-2"
+                            value={form.kalimat}
+                            onChange={handleChange}
+                        />
+
+                        <button className="btn btn-success" onClick={handleSubmitPolling}>
+                            Donasi & Kirim Polling
+                        </button>
+
+                        {!userToken && (
+                            <div className="card mt-4 p-3">
+                                {showLogin && (
+                                    <>
+                                        <h5>Login</h5>
+                                        <LoginForm onLogin={handleLogin} />
+                                        <div className="mt-2">
+                                            Belum punya akun?{' '}
+                                            <button
+                                                className="btn-link p-0"
+                                                onClick={() => {
+                                                    setShowRegister(true);
+                                                    setShowLogin(false);
+                                                }}
+                                            >
+                                                Daftar di sini
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+
+                                {showRegister && (
+                                    <>
+                                        <h5>Registrasi</h5>
+                                        <RegisterForm
+                                            onSuccess={(token) => {
+                                                setUserToken(token);
+                                                setShowRegister(false);
+                                            }}
+                                        />
+                                        <div className="mt-2">
+                                            Sudah punya akun?{' '}
+                                            <button
+                                                className="btn-link p-0"
+                                                onClick={() => {
+                                                    setShowLogin(true);
+                                                    setShowRegister(false);
+                                                }}
+                                            >
+                                                Login di sini
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
+
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
         </div>
     );
 };

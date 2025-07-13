@@ -9829,3 +9829,15 @@ button:focus {
 
 /* Email Css End */
 /*# sourceMappingURL=main.css.map */
+
+
+.menu-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin; /* Firefox */
+}
+.menu-scroll::-webkit-scrollbar {
+  height: 6px;
+}

@@ -52,6 +52,30 @@ export default function Sidebar() {
                     
                 </li>
                 
+                <li className="sidebar-menu__item">
+                    <span className="text-gray-300 text-sm px-20 pt-20 fw-semibold border-top border-gray-100 d-block text-uppercase">Website</span>
+                </li>
+
+                <li className="sidebar-menu__item">
+                    <a href="/admin/pengantar" className="sidebar-menu__link">
+                        <span className="icon"><i className="ph ph-gear"></i></span>
+                        <span className="text">Pengantar</span>
+                    </a>
+                </li>
+
+                <li className="sidebar-menu__item">
+                    <a href="/admin/banners" className="sidebar-menu__link">
+                        <span className="icon"><i className="ph ph-gear"></i></span>
+                        <span className="text">Banner</span>
+                    </a>
+                </li>
+
+                <li className="sidebar-menu__item">
+                    <a href="/admin/about" className="sidebar-menu__link">
+                        <span className="icon"><i className="ph ph-gear"></i></span>
+                        <span className="text">About</span>
+                    </a>
+                </li>
                 
                 <li className="sidebar-menu__item">
                     <span className="text-gray-300 text-sm px-20 pt-20 fw-semibold border-top border-gray-100 d-block text-uppercase">Master</span>
