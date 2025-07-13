@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../../axios';
-import MdEditor from 'react-markdown-editor-lite';
-import Markdown from 'react-markdown';
+// import MDEditor from '@uiw/react-md-editor';
 
 
 export default function AboutForm() {
@@ -25,12 +24,12 @@ export default function AboutForm() {
             <h3 className="mb-3">Edit “About Us”</h3>
             {saved && <div className="alert alert-success">Tersimpan!</div>}
             <form onSubmit={submit}>
-                <MdEditor
+                {/* <MDEditor
                     value={content}
                     style={{ height: '500px' }}
                     renderHTML={text => <Markdown>{text}</Markdown>}
                     onChange={({ text }) => setContent(text)}
-                />
+                /> */}
                 <button className="btn btn-success mt-3">Simpan</button>
             </form>
         </div>
