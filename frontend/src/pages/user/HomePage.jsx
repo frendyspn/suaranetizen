@@ -78,14 +78,14 @@ const HomePage = () => {
         <div className="rounded p-5" style={{ backgroundColor: '#3053a7' }}>
             
             <div className='row'>
-                <div className='col-4 text-center' style={{ alignContent: 'center' }}>
+                <div className='col-md-4 col-sm-12 text-center' style={{ alignContent: 'center' }}>
                     <h4 className='text-white'>{WEB_NAME}</h4>
                     <div className='text-white' dangerouslySetInnerHTML={{ __html: pengantar }} />
                 </div>
-                <div className='col-8'>
+                <div className='col-md-8 col-sm-12'>
                     <div className='bg-white rounded m-5 p-3'>
                         <h5 className='mt-5'>Kirim Polling </h5>
-{error && <div className="alert alert-danger">{error}</div>}
+                        {error && <div className="alert alert-danger">{error}</div>}
                         <select
                             name="kategori_id"
                             className="form-select mb-3"

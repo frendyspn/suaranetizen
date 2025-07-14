@@ -48,11 +48,11 @@ const QuotePage = () => {
                 </div>
             )}
             <div className='row'>
-                <div className='col-4 text-center' style={{ alignContent: 'center' }}>
+                <div className='col-md-4 col-sm-12 text-center' style={{ alignContent: 'center' }}>
                     <span className='text-white'>Join At</span>
                     <h4 className='text-white'>{WEB_NAME}</h4>
                 </div>
-                <div className='col-8'>
+                <div className='col-md-8 col-sm-12'>
                     <div className='bg-white rounded m-5'>
                         <div className='headQuote p-3'>
                             <p className=''>Target Donasi {dataDonasi?.nama_donasi}: Rp.{formatCurrency(targetDonasi)}</p>
