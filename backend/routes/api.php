@@ -73,3 +73,11 @@ Route::prefix('user')->group(function () {
 
     });
 });
+
+Route::prefix('auth')->group(function () {
+    Route::get('/google/redirect',  [SocialAuthController::class,'googleRedirect']);
+    Route::get('/google/callback',  [SocialAuthController::class,'googleCallback']);
+
+    Route::get('/facebook/redirect',[SocialAuthController::class,'facebookRedirect']);
+    Route::get('/facebook/callback',[SocialAuthController::class,'facebookCallback']);
+});

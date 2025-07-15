@@ -24,7 +24,8 @@ import BannerForm from './pages/admin/BannerForm';
 import AboutForm from './pages/admin/AboutForm';
 import AboutPage from './pages/user/AboutPage';
 
-
+import RegisterPage from './pages/RegisterPage';
+import LoginPageUser from './pages/user/LoginPage';
 
 
 const PrivateRoute = ({ children }) => {
@@ -146,6 +147,11 @@ const AppRoutes = () => (
 
                 }
             />
+
+            <Route path="/registrasi" element={<RegisterPage />} />
+
+            <Route path="/user-login" element={<LoginPageUser />} />
+
 
         </Routes>
     </BrowserRouter>

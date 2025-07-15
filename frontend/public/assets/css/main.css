@@ -9833,11 +9833,7 @@ button:focus {
 
 .menu-scroll {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: thin; /* Firefox */
-}
-.menu-scroll::-webkit-scrollbar {
-  height: 6px;
+  max-width: 100%;
 }
