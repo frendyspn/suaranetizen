@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../../axios';
-// import MDEditor from '@uiw/react-md-editor';
 
 
 export default function AboutForm() {
@@ -20,18 +19,22 @@ export default function AboutForm() {
     };
 
     return (
-        <div>
-            <h3 className="mb-3">Edit “About Us”</h3>
-            {saved && <div className="alert alert-success">Tersimpan!</div>}
-            <form onSubmit={submit}>
-                {/* <MDEditor
-                    value={content}
-                    style={{ height: '500px' }}
-                    renderHTML={text => <Markdown>{text}</Markdown>}
-                    onChange={({ text }) => setContent(text)}
-                /> */}
-                <button className="btn btn-success mt-3">Simpan</button>
-            </form>
+        <div className='card p-4'>
+            <div className='card-header'>
+                <h3>Edit About Us</h3>
+            </div>
+            <div className='card-body'>
+                {saved && <div className="alert alert-success">Tersimpan!</div>}
+                <form onSubmit={submit}>
+                    <textarea
+                        className="form-control"
+                        rows={12}
+                        value={content}
+                        onChange={e => setContent(e.target.value)}
+                    />
+                    <button className="btn btn-success mt-3">Simpan</button>
+                </form>
+            </div>
         </div>
     );
 }

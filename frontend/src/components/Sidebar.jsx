@@ -28,16 +28,14 @@ export default function Sidebar() {
             <ul className="sidebar-menu">
                 <li className="sidebar-menu__item has-dropdown">
                     <button
-                                type="button"
-                                className="sidebar-menu__link"
-                                style={{ background: "none", border: "none", padding: 0, width: "100%", textAlign: "left" }}
-                                // Add dropdown toggle logic if needed
-                            >
-                                <span className="icon"><i className="ph ph-squares-four"></i></span>
-                                <span className="text">Dashboard</span>
-                                <span className="link-badge">3</span>
-                            </button>
-                    
+                        type="button"
+                        className="sidebar-menu__link"
+                        style={{ background: "none", border: "none", padding: 0, width: "100%", textAlign: "left" }}
+                    >
+                        <span className="icon"><i className="ph ph-gauge"></i></span>
+                        <span className="text">Dashboard</span>
+                        <span className="link-badge">3</span>
+                    </button>
                     <ul className="sidebar-submenu">
                         <li className="sidebar-submenu__item">
                             <a href="index.html" className="sidebar-submenu__link"> Dashboard One </a>
@@ -49,7 +47,6 @@ export default function Sidebar() {
                             <a href="index-3.html" className="sidebar-submenu__link"> Dashboard Three </a>
                         </li>
                     </ul>
-                    
                 </li>
                 
                 <li className="sidebar-menu__item">
@@ -58,21 +55,21 @@ export default function Sidebar() {
 
                 <li className="sidebar-menu__item">
                     <a href="/admin/pengantar" className="sidebar-menu__link">
-                        <span className="icon"><i className="ph ph-gear"></i></span>
+                        <span className="icon"><i className="ph ph-info"></i></span>
                         <span className="text">Pengantar</span>
                     </a>
                 </li>
 
                 <li className="sidebar-menu__item">
                     <a href="/admin/banners" className="sidebar-menu__link">
-                        <span className="icon"><i className="ph ph-gear"></i></span>
+                        <span className="icon"><i className="ph ph-image"></i></span>
                         <span className="text">Banner</span>
                     </a>
                 </li>
 
                 <li className="sidebar-menu__item">
                     <a href="/admin/about" className="sidebar-menu__link">
-                        <span className="icon"><i className="ph ph-gear"></i></span>
+                        <span className="icon"><i className="ph ph-user-circle"></i></span>
                         <span className="text">About</span>
                     </a>
                 </li>
@@ -82,26 +79,24 @@ export default function Sidebar() {
                 </li>
                 <li className="sidebar-menu__item">
                     <a href="/admin/donasi" className="sidebar-menu__link">
-                        <span className="icon"><i className="ph ph-gear"></i></span>
+                        <span className="icon"><i className="ph ph-hand-heart"></i></span>
                         <span className="text">Donasi</span>
                     </a>
                 </li>
 
                 <li className="sidebar-menu__item">
                     <a href="/admin/kategori" className="sidebar-menu__link">
-                        <span className="icon"><i className="ph ph-gear"></i></span>
+                        <span className="icon"><i className="ph ph-list-bullets"></i></span>
                         <span className="text">Kategori</span>
                     </a>
                 </li>
 
-                
                 <li className="sidebar-menu__item">
                     <button onClick={handleLogout} className="sidebar-menu__link">
                         <span className="icon"><i className="ph ph-sign-out"></i></span>
                         <span className="text">Logout</span>
                     </button>
                 </li>
-                
             </ul>
         </div>
         

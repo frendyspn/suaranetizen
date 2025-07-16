@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from '../../axios';
 import LoginForm from '../user/LoginForm';   // ← path relatif ke file ini
 import AuthLayout from '../../layouts/AuthLayout'; // opsional, kalau Anda punya layout khusus
@@ -9,6 +9,14 @@ import { useNavigate } from 'react-router-dom';
 export default function LoginPage() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Cek apakah user sudah login
+        const token = localStorage.getItem('token');
+        if (token) {
+            navigate('/'); // Redirect ke halaman utama jika sudah login
+        }
+    }, [navigate]);
 
     const handleLogin = async (email, password) => {
         setError('');

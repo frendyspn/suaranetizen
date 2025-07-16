@@ -34,7 +34,7 @@ const Navbar = () => {
 
                 <a href="/" type="button" className="text-gray-500">Home</a>
 
-                <a href="/about" type="button" className="text-gray-500">About Us</a>
+                <a href="/about" type="button" className="text-gray-500">Tentang Suara Netizen</a>
 
                 <a href="/pollings" type="button" className="text-gray-500">Polling</a>
 

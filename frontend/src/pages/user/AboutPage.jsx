@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../../axios';
-import ReactMarkdown from 'react-markdown';
 
 export default function AboutPage() {
     const [content, setContent] = useState('');
@@ -10,7 +9,7 @@ export default function AboutPage() {
 
     return (
         <div className="container mt-4">
-            <ReactMarkdown>{content}</ReactMarkdown>
+            {content}
         </div>
     );
 }

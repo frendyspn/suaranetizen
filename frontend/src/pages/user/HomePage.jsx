@@ -10,7 +10,7 @@ import { WEB_NAME } from '../../constants';
 const HomePage = () => {
     const [form, setForm] = useState({ kalimat: '', kategori_id: '' });
     const [userToken, setUserToken] = useState(localStorage.getItem('token'));
-    const [showLogin, setShowLogin] = useState(false);
+    const [showLogin, setShowLogin] = useState(true);
     const [showRegister, setShowRegister] = useState(false);
     const [error, setError] = useState('');
     const [kategoriList, setKategoriList] = useState([]);
@@ -35,7 +35,8 @@ const HomePage = () => {
     const handleSubmitPolling = async () => {
         setError('');
         if (!userToken) {
-            setShowLogin(true);
+            setError('Silahkan Login Lebih Dahulu')
+            // setShowLogin(true);
             return;
         }
 
@@ -78,43 +79,14 @@ const HomePage = () => {
         <div className="rounded p-5" style={{ backgroundColor: '#3053a7' }}>
             
             <div className='row'>
+                <div className='col-md-12 col-sm-12 text-center py-5' style={{ alignContent: 'center' }}>
+                    <div className='text-white' dangerouslySetInnerHTML={{ __html: pengantar }} />
+                    <hr className='border-white' />
+                </div>
                 <div className='col-md-4 col-sm-12 text-center' style={{ alignContent: 'center' }}>
                     <h4 className='text-white'>{WEB_NAME}</h4>
-                    <div className='text-white' dangerouslySetInnerHTML={{ __html: pengantar }} />
-                </div>
-                <div className='col-md-8 col-sm-12'>
-                    <div className='bg-white rounded m-5 p-3'>
-                        <h5 className='mt-5'>Kirim Polling </h5>
-                        {error && <div className="alert alert-danger">{error}</div>}
-                        <select
-                            name="kategori_id"
-                            className="form-select mb-3"
-                            value={form.kategori_id}
-                            onChange={handleChange}
-                        >
-                            <option value="">Pilih Kategori</option>
-                            {kategoriList.map(k => (
-                                <option key={k.id} value={k.id}>
-                                    {k.nama}
-                                </option>
-                            ))}
-                            {/* Dinamis jika kamu punya API kategori */}
-                        </select>
-
-                        <textarea
-                            name="kalimat"
-                            placeholder="Tulis polling anda..."
-                            className="form-control mb-2"
-                            value={form.kalimat}
-                            onChange={handleChange}
-                        />
-
-                        <button className="btn btn-success" onClick={handleSubmitPolling}>
-                            Donasi & Kirim Polling
-                        </button>
-
-                        {!userToken && (
-                            <div className="card mt-4 p-3">
+                    {!userToken && (
+                            <div className="card mt-4 p-3 m-5">
                                 {showLogin && (
                                     <>
                                         <h5>Login</h5>
@@ -159,6 +131,39 @@ const HomePage = () => {
                                 )}
                             </div>
                         )}
+                </div>
+                <div className='col-md-8 col-sm-12'>
+                    <div className='bg-white rounded m-5 p-3'>
+                        <h5 className='mt-5'>Kirim Polling </h5>
+                        {error && <div className="alert alert-danger">{error}</div>}
+                        <select
+                            name="kategori_id"
+                            className="form-select mb-3"
+                            value={form.kategori_id}
+                            onChange={handleChange}
+                        >
+                            <option value="">Pilih Kategori</option>
+                            {kategoriList.map(k => (
+                                <option key={k.id} value={k.id}>
+                                    {k.nama}
+                                </option>
+                            ))}
+                            {/* Dinamis jika kamu punya API kategori */}
+                        </select>
+
+                        <textarea
+                            name="kalimat"
+                            placeholder="Tulis polling anda..."
+                            className="form-control mb-2"
+                            value={form.kalimat}
+                            onChange={handleChange}
+                        />
+
+                        <button className="btn btn-success" onClick={handleSubmitPolling}>
+                            Donasi & Kirim Polling
+                        </button>
+
+                        
 
 
                     </div>

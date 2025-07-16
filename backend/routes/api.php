@@ -29,6 +29,8 @@ Route::prefix('admin')->group(function () {
         Route::put('/introduction', [IntroductionController::class, 'update']);
 
         Route::get('/banners', [BannerController::class, 'index']);
+        Route::get('/banners/{banner}', [BannerController::class,'show']);
+        Route::post('/banners/{banner}', [BannerController::class,'update']);
         Route::post('/banners', [BannerController::class, 'store']);
 
         Route::put('/about', [AboutController::class,'update']);

@@ -38,6 +38,16 @@ const AppRoutes = () => (
         <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route
+                path="/admin"
+                element={
+                    <PrivateRoute>
+                        <AdminLayout>
+                            <DashboardPage />
+                        </AdminLayout>
+                    </PrivateRoute>
+                }
+            />
+            <Route
                 path="/admin/dashboard"
                 element={
                     <PrivateRoute>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../../axios';
+import ErrorModal from '../../components/ErrorModal';
+import SuccessModal from '../../components/SuccessModal';
 
 export default function BannerForm() {
     const { id } = useParams();
@@ -10,22 +12,24 @@ export default function BannerForm() {
     const [form, setForm] = useState({
         title: '', link: '', sort_order: 0, is_active: false, image: null, preview: ''
     });
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     // load data ketika edit
     useEffect(() => {
         if (isEdit) {
             axios.get(`/admin/banners/${id}`).then(({ data }) => {
-                setForm({
-                    ...form,
+                setForm(f => ({
+                    ...f,
                     title: data.title || '',
                     link: data.link || '',
                     sort_order: data.sort_order,
                     is_active: data.is_active,
                     preview: data.image_url
-                });
+                }));
             });
         }
-    }, [id, form, isEdit]);
+    }, [id, isEdit]);
 
     const handleChange = e => {
         const { name, value, type, checked, files } = e.target;
@@ -38,15 +42,27 @@ export default function BannerForm() {
 
     const handleSubmit = async e => {
         e.preventDefault();
+        setError('');
+        setSuccess('');
         const fd = new FormData();
         Object.entries(form).forEach(([k, v]) => {
             if (k === 'preview') return;
             if (k === 'image' && !v) return; // skip if no new file
             fd.append(k, v);
         });
-        if (isEdit) await axios.put(`/admin/banners/${id}`, fd);
-        else await axios.post('/admin/banners', fd);
-        nav('/admin/banners');
+        try {
+            console.log('Form data:', Object.fromEntries(fd.entries()));
+            if (isEdit) {
+                await axios.post(`/admin/banners/${id}`, fd);
+                setSuccess('Banner berhasil diubah!');
+            } else {
+                await axios.post('/admin/banners', fd);
+                setSuccess('Banner berhasil ditambahkan!');
+            }
+            setTimeout(() => nav('/admin/banners'), 1200);
+        } catch (err) {
+            setError(err.response?.data?.errors || err.response?.data?.message);
+        }
     };
 
     return (
@@ -56,6 +72,8 @@ export default function BannerForm() {
             </div>
 
             <div className='card-body'>
+                {error && <ErrorModal error={error} onClose={() => setError('')} />}
+                {success && <SuccessModal message={success} onClose={() => setSuccess('')} />}
                 <form onSubmit={handleSubmit} encType="multipart/form-data">
                     <div className="mb-3">
                         <label className="form-label">Judul</label>
