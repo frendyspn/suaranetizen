@@ -24,6 +24,8 @@ import BannerForm from './pages/admin/BannerForm';
 import AboutForm from './pages/admin/AboutForm';
 import AboutPage from './pages/user/AboutPage';
 
+import SettingPage from './pages/admin/SettingPage';
+
 import RegisterPage from './pages/RegisterPage';
 import LoginPageUser from './pages/user/LoginPage';
 
@@ -73,6 +75,8 @@ const AppRoutes = () => (
             <Route path="/admin/banner/:id/edit" element={<AdminLayout><BannerForm/></AdminLayout>}/>
 
             <Route path="/admin/about" element={<AdminLayout><AboutForm /></AdminLayout>} />
+
+            <Route path="/admin/settings" element={<AdminLayout><SettingPage /></AdminLayout>} />
 
 
             {/* USER */}

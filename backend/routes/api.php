@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\BannerController;
 
 use App\Http\Controllers\Api\AboutController;
 
+use App\Http\Controllers\SettingController;
+
 Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login']);
 
@@ -34,6 +36,9 @@ Route::prefix('admin')->group(function () {
         Route::post('/banners', [BannerController::class, 'store']);
 
         Route::put('/about', [AboutController::class,'update']);
+
+        
+        Route::post('/settings', [SettingController::class, 'update']);
     });
 });
 
@@ -56,6 +61,8 @@ Route::prefix('user')->group(function () {
     Route::get('/banner-active', [BannerController::class,'showActive']); 
 
     Route::get('/about', [AboutController::class,'show']);
+
+    Route::get('/settings', [SettingController::class, 'index']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [UserAuthController::class, 'me']);

@@ -1,7 +1,12 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import axios from '../axios';
+import { SettingContext } from "../contexts/SettingContext";
+import { API_BASE_URL } from '../constants';
+
 
 export default function Sidebar() {
+    const { site_logo } = useContext(SettingContext);
+
     const handleLogout = async () => {
     try {
         await axios.post('/admin/logout'); // gunakan baseURL sudah /api
@@ -20,7 +25,10 @@ export default function Sidebar() {
      <button type="button" className="sidebar-close-btn text-gray-500 hover-text-white hover-bg-main-600 text-md w-24 h-24 border border-gray-100 hover-border-main-600 d-xl-none d-flex flex-center rounded-circle position-absolute"><i className="ph ph-x"></i></button>
     
     <a href="index.html" className="sidebar__logo text-center p-20 position-sticky inset-block-start-0 bg-white w-100 z-1 pb-10">
-        <img src="assets/images/logo/logo.png" alt="Logo" />
+        {site_logo && (
+        <img src={`${API_BASE_URL}/${site_logo}`} alt="Logo" className="h-10 mr-3" />
+      )}
+        
     </a>
 
     <div className="sidebar-menu-wrapper overflow-y-auto scroll-sm">
@@ -71,6 +79,13 @@ export default function Sidebar() {
                     <a href="/admin/about" className="sidebar-menu__link">
                         <span className="icon"><i className="ph ph-user-circle"></i></span>
                         <span className="text">About</span>
+                    </a>
+                </li>
+
+                <li className="sidebar-menu__item">
+                    <a href="/admin/settings" className="sidebar-menu__link">
+                        <span className="icon"><i className="ph ph-user-circle"></i></span>
+                        <span className="text">Setting</span>
                     </a>
                 </li>
                 
