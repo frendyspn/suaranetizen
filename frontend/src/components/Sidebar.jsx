@@ -26,7 +26,7 @@ export default function Sidebar() {
     
     <a href="index.html" className="sidebar__logo text-center p-20 position-sticky inset-block-start-0 bg-white w-100 z-1 pb-10">
         {site_logo && (
-        <img src={`${API_BASE_URL}upload/${site_logo}`} alt="Logo" className="h-10 mr-3" />
+        <img src={`${API_BASE_URL}uploads/${site_logo}`} alt="Logo" className="h-10 mr-3" />
       )}
         
     </a>
