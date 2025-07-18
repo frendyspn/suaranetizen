@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\AboutController;
 
 use App\Http\Controllers\SettingController;
 
+use App\Http\Controllers\TeamController;
+
 Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login']);
 
@@ -39,6 +41,14 @@ Route::prefix('admin')->group(function () {
 
         
         Route::post('/settings', [SettingController::class, 'update']);
+
+
+        Route::get('/teams', [TeamController::class, 'index']);
+        Route::post('/teams', [TeamController::class, 'store']);
+        Route::get('/teams/{id}', [TeamController::class, 'show']);
+        Route::put('/teams/{id}', [TeamController::class, 'update']);
+        Route::delete('/teams/{id}', [TeamController::class, 'destroy']);
+
     });
 });
 
@@ -63,6 +73,8 @@ Route::prefix('user')->group(function () {
     Route::get('/about', [AboutController::class,'show']);
 
     Route::get('/settings', [SettingController::class, 'index']);
+
+    Route::get('/teams', [TeamController::class, 'index']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [UserAuthController::class, 'me']);

@@ -43,6 +43,8 @@ const Navbar = () => {
 
                 <a href="/quotes" type="button" className={`text-gray-500 ${currentPath === '/quotes' && 'fw-bold'}`}>Quote Terbit</a>
 
+                <a href="/team" type="button" className={`text-gray-500 ${currentPath === '/team' && 'fw-bold'}`}>Tim</a>
+
                 {isLogin ? (
                     <button type="button" className="text-gray-500" onClick={handleLogout}>Logout</button>
                 ) : (

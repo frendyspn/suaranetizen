@@ -28,6 +28,8 @@ import SettingPage from './pages/admin/SettingPage';
 
 import RegisterPage from './pages/RegisterPage';
 import LoginPageUser from './pages/user/LoginPage';
+import TeamListPage from './pages/admin/TeamListPage';
+import TeamPage from './pages/user/TeamPage';
 
 
 const PrivateRoute = ({ children }) => {
@@ -77,6 +79,8 @@ const AppRoutes = () => (
             <Route path="/admin/about" element={<AdminLayout><AboutForm /></AdminLayout>} />
 
             <Route path="/admin/settings" element={<AdminLayout><SettingPage /></AdminLayout>} />
+
+            <Route path="/admin/teams" element={<AdminLayout><TeamListPage /></AdminLayout>} />
 
 
             {/* USER */}
@@ -157,6 +161,16 @@ const AppRoutes = () => (
                 element={
                     <UserLayout>
                         <AboutPage />
+                    </UserLayout>
+
+                }
+            />
+
+            <Route
+                path="/team"
+                element={
+                    <UserLayout>
+                        <TeamPage />
                     </UserLayout>
 
                 }

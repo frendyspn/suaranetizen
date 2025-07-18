@@ -84,8 +84,15 @@ export default function Sidebar() {
 
                 <li className="sidebar-menu__item">
                     <a href="/admin/settings" className="sidebar-menu__link">
-                        <span className="icon"><i className="ph ph-user-circle"></i></span>
+                        <span className="icon"><i className="ph ph-gear"></i></span>
                         <span className="text">Setting</span>
+                    </a>
+                </li>
+
+                <li className="sidebar-menu__item">
+                    <a href="/admin/teams" className="sidebar-menu__link">
+                        <span className="icon"><i className="ph ph-users"></i></span>
+                        <span className="text">Team</span>
                     </a>
                 </li>
                 

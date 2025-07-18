@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "../../axios"; // Adjust the import path as necessary
 import ErrorModal from "../../components/ErrorModal";
 import SuccessModal from "../../components/SuccessModal";
+import { API_BASE_URL } from "../../constants";
 
 export default function SettingPage() {
     const [settings, setSettings] = useState({
@@ -62,16 +63,31 @@ export default function SettingPage() {
 
                     <div>
                         <label>Logo</label>
+                        {
+                            settings.site_logo && (
+                                <img src={`${API_BASE_URL}uploads/${settings.site_logo}`} alt="Logo" className="h-50 mb-2" />
+                            )
+                        }
                         <input name="site_logo" type="file" onChange={handleFileChange} className="input form-control" />
                     </div>
 
                     <div>
                         <label>Favicon</label>
+                        {
+                            settings.site_favicon && (
+                                <img src={`${API_BASE_URL}uploads/${settings.site_favicon}`} alt="Favicon" className="h-50 mb-2" />
+                            )
+                        }
                         <input name="site_favicon" type="file" onChange={handleFileChange} className="input form-control" />
                     </div>
 
                     <div>
                         <label>Thumbnail</label>
+                        {
+                            settings.site_thumbnail && (
+                                <img src={`${API_BASE_URL}uploads/${settings.site_thumbnail}`} alt="Thumbnail" className="h-50 mb-2" />
+                            )
+                        }
                         <input name="site_thumbnail" type="file" onChange={handleFileChange} className="input form-control" />
                     </div>
 
