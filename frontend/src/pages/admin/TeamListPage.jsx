@@ -91,7 +91,7 @@ export default function TeamListPage() {
                             <td className="border p-2">{t.position}</td>
                             <td>
                                 {t.photo && (
-                                    <img src={`${API_BASE_URL}/storage/${t.photo}`} alt="" className="w-12 h-12 object-cover rounded-full" />
+                                    <img src={`${API_BASE_URL}uploads/${t.photo}`} alt="" className="w-12 h-12 object-cover rounded-full" />
                                 )}
                             </td>
                             <td className="border p-2">
