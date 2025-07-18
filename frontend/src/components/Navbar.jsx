@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import HeaderBanner from '../components/HeaderBanner';
 
 const Navbar = () => {
+    const currentPath = window.location.pathname;
     const [isLogin, setIsLogin] = useState(false);
 
     useEffect(() => {
@@ -23,7 +24,7 @@ const Navbar = () => {
 
 
             <div
-                className={`menu-scroll d-md-flex gap-16`}
+                className={`menu-scroll d-md-flex gap-16 py-10`}
                 style={{
                     display: 'flex',
                     flexWrap: 'wrap',      // menu akan turun ke bawah jika overlap
@@ -32,22 +33,22 @@ const Navbar = () => {
                 }}
             >
 
-                <a href="/" type="button" className="text-gray-500">Home</a>
+                <a href="/" type="button" className={`text-gray-500 ${currentPath === '/' && 'fw-bold'}`}>Home</a>
 
-                <a href="/about" type="button" className="text-gray-500">Tentang Suara Netizen</a>
+                <a href="/about" type="button" className={`text-gray-500 ${currentPath === '/about' && 'fw-bold'}`}>Tentang Suara Netizen</a>
 
-                <a href="/pollings" type="button" className="text-gray-500">Polling</a>
+                <a href="/pollings" type="button" className={`text-gray-500 ${currentPath === '/pollings' && 'fw-bold'}`}>Polling</a>
 
-                <a href="/result" type="button" className="text-gray-500">Result</a>
+                <a href="/result" type="button" className={`text-gray-500 ${currentPath === '/result' && 'fw-bold'}`}>Result</a>
 
-                <a href="/quotes" type="button" className="text-gray-500">Quote Terbit</a>
+                <a href="/quotes" type="button" className={`text-gray-500 ${currentPath === '/quotes' && 'fw-bold'}`}>Quote Terbit</a>
 
                 {isLogin ? (
                     <button type="button" className="text-gray-500" onClick={handleLogout}>Logout</button>
                 ) : (
                     <>
-                        <a href="/user-login" className="text-gray-500">Login</a>
-                        <a href="/registrasi" className="text-gray-500">Registrasi</a>
+                        <a href="/user-login" className={`text-gray-500 ${currentPath === '/user-login' && 'fw-bold'}`}>Login</a>
+                        <a href="/registrasi" className={`text-gray-500 ${currentPath === '/registrasi' && 'fw-bold'}`}>Registrasi</a>
                     </>
                 )}
 

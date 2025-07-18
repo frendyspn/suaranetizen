@@ -19,7 +19,7 @@ export function SettingProvider({ children }) {
             if (res.data.site_favicon) {
                 const link = document.querySelector("link[rel~='icon']");
                 if (link) {
-                    link.href = `${API_BASE_URL}${res.data.site_favicon}`;
+                    link.href = `${API_BASE_URL}setting${res.data.site_favicon}`;
                 }
             }
         })
