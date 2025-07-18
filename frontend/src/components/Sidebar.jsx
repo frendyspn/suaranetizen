@@ -42,9 +42,9 @@ export default function Sidebar() {
                     >
                         <span className="icon"><i className="ph ph-gauge"></i></span>
                         <span className="text">Dashboard</span>
-                        <span className="link-badge">3</span>
+                        {/* <span className="link-badge">3</span> */}
                     </button>
-                    <ul className="sidebar-submenu">
+                    {/* <ul className="sidebar-submenu">
                         <li className="sidebar-submenu__item">
                             <a href="index.html" className="sidebar-submenu__link"> Dashboard One </a>
                         </li>
@@ -54,7 +54,7 @@ export default function Sidebar() {
                         <li className="sidebar-submenu__item">
                             <a href="index-3.html" className="sidebar-submenu__link"> Dashboard Three </a>
                         </li>
-                    </ul>
+                    </ul> */}
                 </li>
                 
                 <li className="sidebar-menu__item">
