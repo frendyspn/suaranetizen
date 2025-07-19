@@ -134,7 +134,7 @@ const HomePage = () => {
                 </div>
                 <div className='col-md-8 col-sm-12'>
                     <div className='bg-white rounded m-5 p-3'>
-                        <h5 className='mt-5'>Kirim Polling </h5>
+                        <h5 className='mt-5'>Buat Kata-kata/Quote/Pesan </h5>
                         {error && <div className="alert alert-danger">{error}</div>}
                         <select
                             name="kategori_id"
@@ -153,14 +153,14 @@ const HomePage = () => {
 
                         <textarea
                             name="kalimat"
-                            placeholder="Tulis polling anda..."
+                            placeholder="Tulis Kata-kata Anda di sini..."
                             className="form-control mb-2"
                             value={form.kalimat}
                             onChange={handleChange}
                         />
 
                         <button className="btn btn-success" onClick={handleSubmitPolling}>
-                            Donasi & Kirim Polling
+                            Donasi & Kirim Kata-kata
                         </button>
 
                         
