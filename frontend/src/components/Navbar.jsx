@@ -35,23 +35,34 @@ const Navbar = () => {
 
                 <a href="/" type="button" className={`text-gray-500 ${currentPath === '/' && 'fw-bold'}`}>Home</a>
 
+                <div className='border border-dark'></div>
+
                 <a href="/about" type="button" className={`text-gray-500 ${currentPath === '/about' && 'fw-bold'}`}>Tentang Suara Netizen</a>
+
+                <div className='border border-dark'></div>
 
                 <a href="/pollings" type="button" className={`text-gray-500 ${currentPath === '/pollings' && 'fw-bold'}`}>Polling</a>
 
+                <div className='border border-dark'></div>
+
                 <a href="/result" type="button" className={`text-gray-500 ${currentPath === '/result' && 'fw-bold'}`}>Result</a>
+
+                <div className='border border-dark'></div>
 
                 <a href="/quotes" type="button" className={`text-gray-500 ${currentPath === '/quotes' && 'fw-bold'}`}>Quote Terbit</a>
 
+                <div className='border border-dark'></div>
+
                 <a href="/team" type="button" className={`text-gray-500 ${currentPath === '/team' && 'fw-bold'}`}>Tim</a>
 
-                {isLogin ? (
-                    <button type="button" className="text-gray-500" onClick={handleLogout}>Logout</button>
-                ) : (
+                
+
+                {isLogin && (
                     <>
-                        <a href="/user-login" className={`text-gray-500 ${currentPath === '/user-login' && 'fw-bold'}`}>Login</a>
-                        <a href="/registrasi" className={`text-gray-500 ${currentPath === '/registrasi' && 'fw-bold'}`}>Registrasi</a>
+                    <div className='border border-dark'></div>
+                    <button type="button" className="text-gray-500" onClick={handleLogout}>Logout</button>
                     </>
+                    
                 )}
 
                 {/* <a href="/user-login" type="button" className="text-gray-500">Login</a> */}

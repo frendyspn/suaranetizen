@@ -50,7 +50,7 @@ const ResultPollingPage = () => {
                                     <div className='headQuote p-3'>
                                         {
                                             dataPolling.length > 0 && (
-                                                <p className=''>5 Besar Hasil Poling </p>
+                                                <p className=''>3 Besar Hasil Poling </p>
                                             )
                                         }
                                         

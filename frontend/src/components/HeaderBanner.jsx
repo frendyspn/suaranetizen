@@ -14,7 +14,7 @@ export default function HeaderBanner() {
         <img
             src={banner.image_url}
             alt={banner.title || 'Banner'}
-            style={{ width: '100vw', maxHeight: 250, objectFit: 'cover', display: 'block' }}
+            style={{ width: '100vw', maxHeight: 130, objectFit: 'cover', display: 'block' }}
         />
     );
 

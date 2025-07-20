@@ -217,7 +217,7 @@ class PollingController extends Controller
         $pollings = Polling::with('kategori','user')
             ->withCount('pollingVotes')
             ->where('status', 'paid')
-            ->limit(5)
+            ->limit(3)
             ->get();
         
         $pollings->transform(function ($polling) {

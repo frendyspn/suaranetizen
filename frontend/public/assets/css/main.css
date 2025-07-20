@@ -9021,7 +9021,7 @@ button:focus {
     background-color: hsl(var(--white));
     padding-block-start: 16px;
     padding-block-end: 16px;
-    position: static;
+    position: sticky;
     top: 0;
     z-index: 9;
     border-bottom: 1px solid var(--gray-100);
