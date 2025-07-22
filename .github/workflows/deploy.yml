@@ -24,8 +24,8 @@ jobs:
         working-directory: ./frontend 
         run: |
           echo "Building React App..."
-          npm ci
-          npm run build
+          npm ci --legacy-peer-deps
+          CI=false npm run build
 
       # --- BAGIAN BUILD BACKEND (LARAVEL) ---
       - name: Set up PHP
