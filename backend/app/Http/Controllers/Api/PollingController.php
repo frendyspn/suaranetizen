@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api; // Pastikan namespace benar (bukan 'api')
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -91,23 +91,28 @@ class PollingController extends Controller
             'kategori_ids.*.exists' => 'Kategori yang dipilih tidak valid'
         ]);
 
+        // Create polling
         $polling = Polling::create([
             'kalimat' => $request->kalimat,
-            'kategori_id' => $request->kategori_ids[0], // Keep first category for backward compatibility
+            'kategori_id' => $request->kategori_ids[0],
             'kategori_ids' => $request->kategori_ids,
             'is_anonymous' => $request->is_anonymous ?? false,
             'user_id' => $request->user()->id,
             'donasi_id' => null,
-            'status' => 'paid',
-            'nominal' => '0'
+            'status' => 'paid', // Status langsung paid
+            'nominal' => 0
         ]);
 
+        // Sync categories - INI YANG MENYEBABKAN ERROR jika method kategoris() tidak ada
         $polling->kategoris()->sync($request->kategori_ids);
 
+        // Load relationships untuk response
+        $polling->load(['user', 'kategoris']);
+
         return response()->json([
-            'message' => 'Polling berhasil dikirim',
+            'message' => 'Polling berhasil dikirim tanpa donasi.',
             'polling' => $polling,
-            'donasi' => 'Polling Tanpa Donasi'
+            'donasi' => null
         ]);
     }
 
@@ -236,33 +241,32 @@ class PollingController extends Controller
             }
         }
         
-        $dataPolling = Polling::with('kategori','user')
+        // PERBAIKI: gunakan 'kategoris' bukan 'kategori'
+        $dataPolling = Polling::with(['kategoris', 'user'])
             ->withCount('pollingVotes')
             ->where('status', 'paid');
 
         if ($user) {
             $votedIds = PollingVote::where('user_id', $user->id)->pluck('id_polling')->toArray();
-            
             $pollings = $dataPolling->whereNotIn('id', $votedIds)->whereNot('user_id', $user->id)->get();
         } else {
             $pollings = $dataPolling->get();
         }
 
+        // Transform untuk handle anonymous
         $pollings->transform(function ($polling) {
-            if ($polling->user && $polling->user->name) {
-                $polling->user->name = $this->maskName($polling->user->name);
+            // Handle anonymous
+            if ($polling->is_anonymous) {
+                $polling->makeHidden(['user']);
+                $polling->display_name = 'Anonim';
+            } else {
+                if ($polling->user && $polling->user->name) {
+                    $polling->user->name = $this->maskName($polling->user->name);
+                }
+                $polling->display_name = $polling->user ? $polling->user->name : 'Unknown';
             }
-            $polling->polling_votes = 1; // tambahkan properti polling_votes = 1
-            return $polling;
-        });
-
-        
-
-        // Sensor nama user
-        $pollings->transform(function ($polling) {
-            if ($polling->user && $polling->user->name) {
-                $polling->user->name = $this->maskName($polling->user->name);
-            }
+            
+            $polling->polling_votes = 1;
             return $polling;
         });
 
@@ -272,27 +276,36 @@ class PollingController extends Controller
 
     public function resultPollings(Request $request)
     {
-        
-        $pollings = Polling::with('kategori','user')
+        // PERBAIKI: gunakan 'kategoris' bukan 'kategori'
+        $pollings = Polling::with(['kategoris', 'user'])
             ->withCount('pollingVotes')
             ->where('status', 'paid')
+            ->orderBy('polling_votes_count', 'desc')
             ->limit(3)
             ->get();
         
+        // Transform untuk handle anonymous
         $pollings->transform(function ($polling) {
-            if ($polling->user && $polling->user->name) {
-                $polling->user->name = $this->maskName($polling->user->name);
+            if ($polling->is_anonymous) {
+                $polling->makeHidden(['user']);
+                $polling->display_name = 'Anonim';
+            } else {
+                if ($polling->user && $polling->user->name) {
+                    $polling->user->name = $this->maskName($polling->user->name);
+                }
+                $polling->display_name = $polling->user ? $polling->user->name : 'Unknown';
             }
-            $polling->polling_votes = 1; // tambahkan properti polling_votes = 1
+            
+            $polling->polling_votes = 1;
             return $polling;
         });
-
 
         return response()->json($pollings);
     }
 
     private function maskName($name)
     {
+        return $name;
         // Pisahkan nama berdasarkan spasi
         $parts = explode(' ', $name);
         $masked = array_map(function($part) {

@@ -21,6 +21,7 @@ class Kategori extends Model
 
     public function pollings()
     {
-        return $this->hasMany(Polling::class);
+        return $this->belongsToMany(Polling::class, 'polling_kategori', 'kategori_id', 'polling_id')
+                    ->select(['pollings.id', 'pollings.judul']); // Spesifikasi tabel
     }
 }

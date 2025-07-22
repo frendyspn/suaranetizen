@@ -88,6 +88,8 @@ Route::prefix('user')->group(function () {
     Route::get('/galleries', [GalleryController::class, 'index']);
 
     Route::get('billboard', [App\Http\Controllers\User\BillboardController::class, 'show']);
+
+    Route::get('/donation-progress', [App\Http\Controllers\Api\DonasiController::class, 'donationProgress']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [UserAuthController::class, 'me']);

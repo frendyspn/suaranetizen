@@ -95,6 +95,7 @@ class DonasiController extends Controller
             ->where('status', 'paid')
             ->with('kategori')
             ->orderBy('polling_votes_count', 'desc')
+            ->limit(1)
             ->get();
 
         $polling->transform(function ($polling) {
@@ -114,6 +115,7 @@ class DonasiController extends Controller
 
     private function maskName($name)
     {
+        return $name; // Kembalikan nama tanpa masking untuk saat ini
         // Pisahkan nama berdasarkan spasi
         $parts = explode(' ', $name);
         $masked = array_map(function($part) {

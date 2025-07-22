@@ -5,25 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Polling extends Model
 {
-    use HasFactory;
-    public $incrementing = false;
-    protected $keyType = 'string';
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'user_id',
         'kalimat',
-        'kategori_id', // Keep for backward compatibility
-        'kategori_ids', // New field for multiple categories
+        'kategori_id',
+        'kategori_ids',
         'is_anonymous',
-        'qr_image',
-        'is_paid'
+        'donasi_id', 
+        'status',
+        'nominal',
+        'id_payment',
+        'qris_url',
+        'payment_response'
     ];
 
     protected $casts = [
-        'kategori_ids' => 'array', // Cast JSON to array
+        'kategori_ids' => 'array',
         'is_anonymous' => 'boolean'
     ];
 
@@ -34,32 +37,34 @@ class Polling extends Model
         });
     }
 
+    // Multiple categories relationship
+    public function kategori()
+    {
+        return $this->belongsToMany(Kategori::class, 'polling_kategori', 'polling_id', 'kategori_id')
+                    ->select(['kategoris.id', 'kategoris.nama']); // Spesifikasi tabel
+    }
+
+    // Alternative method name for consistency
+    public function kategoris()
+    {
+        return $this->kategori();
+    }
+
+    // Polling votes relationship
+    public function pollingVotes()
+    {
+        return $this->hasMany(PollingVote::class, 'id_polling');
+    }
+
+    // User relationship
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function donasi() {
+    // Donasi relationship
+    public function donasi()
+    {
         return $this->belongsTo(Donasi::class);
-    }
-
-    public function kategori() {
-        return $this->belongsTo(Kategori::class);
-    }
-
-    public function pollingVotes()
-    {
-        return $this->belongsToMany(Kategori::class, 'polling_kategori', 'polling_id', 'kategori_id');
-    }
-
-    // Accessor to get display name (anonymous or real name)
-    public function getDisplayNameAttribute()
-    {
-        return $this->is_anonymous ? 'Anonim' : $this->user->name;
-    }
-
-    public function kategoris()
-    {
-        return $this->belongsToMany(Kategori::class, 'polling_kategori', 'polling_id', 'kategori_id');
     }
 }
