@@ -1,0 +1,58 @@
+.dropdown-multiple-select {
+    position: relative;
+}
+
+.dropdown-multiple-select .dropdown-menu {
+    width: 100% !important;
+    margin-top: 2px;
+}
+
+.dropdown-multiple-select .dropdown-item {
+    padding: 0.25rem 0.5rem;
+}
+
+.dropdown-multiple-select .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-multiple-select .form-check {
+    margin: 0;
+}
+
+.dropdown-multiple-select .form-check-label {
+    padding-left: 0.25rem;
+    font-weight: normal;
+}
+
+.dropdown-multiple-select .btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Badge styles for selected items */
+.badge .btn-close {
+    padding: 0;
+    font-size: 0.6em !important;
+    opacity: 0.8;
+}
+
+.badge .btn-close:hover {
+    opacity: 1;
+}
+
+/* Scrollbar for dropdown */
+.dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}

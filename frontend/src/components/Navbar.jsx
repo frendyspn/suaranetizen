@@ -55,6 +55,14 @@ const Navbar = () => {
 
                 <a href="/team" type="button" className={`text-gray-500 ${currentPath === '/team' && 'fw-bold'}`}>Tim</a>
 
+                <div className='border border-dark'></div>
+
+                <a href="/gallery" type="button" className={`text-gray-500 ${currentPath === '/gallery' && 'fw-bold'}`}>Gallery</a>
+
+                <div className='border border-dark'></div>
+
+                <a href="/billboard" type="button" className={`text-gray-500 ${currentPath === '/billboard' && 'fw-bold'}`}>Penerbitan Billboard</a>
+
                 
 
                 {isLogin && (

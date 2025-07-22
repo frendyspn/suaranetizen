@@ -95,6 +95,20 @@ export default function Sidebar() {
                         <span className="text">Team</span>
                     </a>
                 </li>
+
+                <li className="sidebar-menu__item">
+                    <a href="/admin/gallery" className="sidebar-menu__link">
+                        <span className="icon"><i className="ph ph-images"></i></span>
+                        <span className="text">Gallery</span>
+                    </a>
+                </li>
+
+                <li className="sidebar-menu__item">
+                    <a href="/admin/billboard" className="sidebar-menu__link">
+                        <span className="icon"><i className="ph ph-chat-circle-text"></i></span>
+                        <span className="text">Billboard</span>
+                    </a>
+                </li>
                 
                 <li className="sidebar-menu__item">
                     <span className="text-gray-300 text-sm px-20 pt-20 fw-semibold border-top border-gray-100 d-block text-uppercase">Master</span>

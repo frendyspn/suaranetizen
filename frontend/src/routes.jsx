@@ -30,6 +30,10 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPageUser from './pages/user/LoginPage';
 import TeamListPage from './pages/admin/TeamListPage';
 import TeamPage from './pages/user/TeamPage';
+import GalleryPage from './pages/user/GalleryPage';
+import GalleryAdminPage from './pages/admin/GalleryAdminPage';
+import BillboardForm from './pages/admin/BillboardForm';
+import BillboardPage from './pages/user/BillboardPage';
 
 
 const PrivateRoute = ({ children }) => {
@@ -81,6 +85,10 @@ const AppRoutes = () => (
             <Route path="/admin/settings" element={<AdminLayout><SettingPage /></AdminLayout>} />
 
             <Route path="/admin/teams" element={<AdminLayout><TeamListPage /></AdminLayout>} />
+
+            <Route path="/admin/gallery" element={<AdminLayout><GalleryAdminPage /></AdminLayout>} />
+
+            <Route path="/admin/billboard" element={<AdminLayout><BillboardForm /></AdminLayout>} />
 
 
             {/* USER */}
@@ -171,6 +179,26 @@ const AppRoutes = () => (
                 element={
                     <UserLayout>
                         <TeamPage />
+                    </UserLayout>
+
+                }
+            />
+
+            <Route
+                path="/gallery"
+                element={
+                    <UserLayout>
+                        <GalleryPage />
+                    </UserLayout>
+
+                }
+            />
+
+            <Route
+                path="/billboard"
+                element={
+                    <UserLayout>
+                        <BillboardPage />
                     </UserLayout>
 
                 }

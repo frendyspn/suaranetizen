@@ -9,7 +9,10 @@ export default function AboutPage() {
 
     return (
         <div className="container mt-4 col-lg-6 col-md-8 colxs-12">
-            {content}
+            <div 
+                    className="about-content"
+                    dangerouslySetInnerHTML={{ __html: content }}
+                />
         </div>
     );
 }

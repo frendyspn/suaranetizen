@@ -23,14 +23,33 @@ class PollingController extends Controller
 
     public function show(string $id)
     {
-        return Polling::with('kategori')->findOrFail($id);
+        $polling = Polling::with(['user', 'kategoris'])
+            ->findOrFail($id);
+
+        // If anonymous, hide user details
+        if ($polling->is_anonymous) {
+            $polling->makeHidden(['user']);
+            $polling->display_name = 'Anonim';
+        } else {
+            $polling->display_name = $polling->user->name;
+        }
+
+        return response()->json($polling);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'kalimat' => 'required|string',
-            'kategori_id' => 'required|exists:kategoris,id', // jika kamu punya kategori
+            'kalimat' => 'required|string|max:30',
+            'kategori_ids' => 'required|array|min:1',
+            'kategori_ids.*' => 'exists:kategoris,id',
+            'is_anonymous' => 'boolean'
+        ], [
+            'kalimat.required' => 'Kata-kata tidak boleh kosong',
+            'kalimat.max' => 'Kata-kata maksimal 30 karakter',
+            'kategori_ids.required' => 'Pilih minimal satu kategori',
+            'kategori_ids.min' => 'Pilih minimal satu kategori',
+            'kategori_ids.*.exists' => 'Kategori yang dipilih tidak valid'
         ]);
 
         $donasi = Donasi::where('is_active', true)->where('status', 'onprogress')->first();
@@ -40,15 +59,55 @@ class PollingController extends Controller
 
         $polling = Polling::create([
             'kalimat' => $request->kalimat,
-            'kategori_id' => $request->kategori_id,
+            'kategori_id' => $request->kategori_ids[0], // Keep first category for backward compatibility
+            'kategori_ids' => $request->kategori_ids,
+            'is_anonymous' => $request->is_anonymous ?? false,
             'user_id' => $request->user()->id,
             'donasi_id' => $donasi->id,
+            'status' => 'pending',
         ]);
+
+        $polling->kategoris()->sync($request->kategori_ids);
 
         return response()->json([
             'message' => 'Polling berhasil dikirim. Silakan lakukan donasi.',
             'polling' => $polling,
             'donasi' => $donasi
+        ]);
+    }
+
+    public function storeFree(Request $request)
+    {
+        $request->validate([
+            'kalimat' => 'required|string|max:30',
+            'kategori_ids' => 'required|array|min:1',
+            'kategori_ids.*' => 'exists:kategoris,id',
+            'is_anonymous' => 'boolean'
+        ], [
+            'kalimat.required' => 'Kata-kata tidak boleh kosong',
+            'kalimat.max' => 'Kata-kata maksimal 30 karakter',
+            'kategori_ids.required' => 'Pilih minimal satu kategori',
+            'kategori_ids.min' => 'Pilih minimal satu kategori',
+            'kategori_ids.*.exists' => 'Kategori yang dipilih tidak valid'
+        ]);
+
+        $polling = Polling::create([
+            'kalimat' => $request->kalimat,
+            'kategori_id' => $request->kategori_ids[0], // Keep first category for backward compatibility
+            'kategori_ids' => $request->kategori_ids,
+            'is_anonymous' => $request->is_anonymous ?? false,
+            'user_id' => $request->user()->id,
+            'donasi_id' => null,
+            'status' => 'paid',
+            'nominal' => '0'
+        ]);
+
+        $polling->kategoris()->sync($request->kategori_ids);
+
+        return response()->json([
+            'message' => 'Polling berhasil dikirim',
+            'polling' => $polling,
+            'donasi' => 'Polling Tanpa Donasi'
         ]);
     }
 

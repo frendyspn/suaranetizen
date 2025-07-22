@@ -18,6 +18,9 @@ use App\Http\Controllers\SettingController;
 
 use App\Http\Controllers\TeamController;
 
+
+use App\Http\Controllers\Admin\GalleryController as GalleryController;
+
 Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login']);
 
@@ -49,6 +52,12 @@ Route::prefix('admin')->group(function () {
         Route::put('/teams/{id}', [TeamController::class, 'update']);
         Route::delete('/teams/{id}', [TeamController::class, 'destroy']);
 
+
+        Route::apiResource('galleries', GalleryController::class);
+
+        Route::get('billboard', [App\Http\Controllers\Admin\BillboardController::class, 'show']);
+        Route::put('billboard', [App\Http\Controllers\Admin\BillboardController::class, 'update']);
+
     });
 });
 
@@ -75,21 +84,26 @@ Route::prefix('user')->group(function () {
     Route::get('/settings', [SettingController::class, 'index']);
 
     Route::get('/teams', [TeamController::class, 'index']);
+
+    Route::get('/galleries', [GalleryController::class, 'index']);
+
+    Route::get('billboard', [App\Http\Controllers\User\BillboardController::class, 'show']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [UserAuthController::class, 'me']);
         Route::post('/logout', [UserAuthController::class, 'logout']);
 
         Route::post('/polling', [PollingController::class, 'store']);
+        Route::post('/polling-free', [PollingController::class, 'storeFree']);
         Route::post('/polling/{id}/generate-qris', [PollingController::class, 'generateQris']);
         Route::post('/polling/{id}/update-status-payment', [PollingController::class, 'updateStatusPayment']);
         Route::get('/polling/{id}', [PollingController::class, 'show']);
         Route::get('/donasi-aktif', [PollingController::class, 'donasiAktif']);
         
-        
 
         Route::post('/polling-vote', [PollingController::class, 'vote']);
 
+        
         
 
     });
