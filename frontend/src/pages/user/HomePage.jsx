@@ -9,22 +9,20 @@ import { WEB_NAME } from '../../constants';
 
 import GallerySlideshow from '../../components/GallerySlideshow';
 
-import  '../../components/DropdownMultiSelect.css';
-
 const HomePage = () => {
     const [form, setForm] = useState({ 
         kalimat: '', 
         kategori_ids: [], 
-        is_anonymous: false 
+        custom_name: ''
     });
     const [userToken, setUserToken] = useState(localStorage.getItem('token'));
+    const [userInfo, setUserInfo] = useState(null); // Add user info state
     const [showLogin, setShowLogin] = useState(true);
     const [showRegister, setShowRegister] = useState(false);
     const [error, setError] = useState('');
     const [kategoriList, setKategoriList] = useState([]);
     const [pengantar, setPengantar] = useState('');
     const [remainingChars, setRemainingChars] = useState(30);
-    const [showDropdown, setShowDropdown] = useState(false); // New state for dropdown
 
     const navigate = useNavigate();
 
@@ -34,7 +32,30 @@ const HomePage = () => {
         });
 
         axios.get('/user/introduction').then(res => setPengantar(res.data?.content || ''));
-    }, []);
+
+        // Fetch user info if token exists
+        if (userToken) {
+            fetchUserInfo();
+        }
+    }, [userToken]);
+
+    // Function to fetch user information
+    const fetchUserInfo = async () => {
+        try {
+            const res = await axios.get('/user/profile', {
+                headers: { Authorization: `Bearer ${userToken}` }
+            });
+            setUserInfo(res.data.user);
+        } catch (err) {
+            console.error('Failed to fetch user info:', err);
+            // If token is invalid, clear it
+            if (err.response?.status === 401) {
+                localStorage.removeItem('token');
+                setUserToken(null);
+                setUserInfo(null);
+            }
+        }
+    };
 
     const handleChange = e => {
         const { name, value } = e.target;
@@ -60,19 +81,15 @@ const HomePage = () => {
         setForm({ ...form, kategori_ids: updatedKategoriIds });
     };
 
-    // Get selected category names for display
-    const getSelectedKategoriNames = () => {
-        if (form.kategori_ids.length === 0) return 'Pilih kategori...';
-        if (form.kategori_ids.length === 1) {
-            const kategori = kategoriList.find(k => k.id === form.kategori_ids[0]);
-            return kategori?.nama || '';
-        }
-        return `${form.kategori_ids.length} kategori dipilih`;
+    // Handle select all categories
+    const handleSelectAllKategori = () => {
+        const allKategoriIds = kategoriList.map(kategori => kategori.id);
+        setForm({ ...form, kategori_ids: allKategoriIds });
     };
 
-    // Handle anonymous checkbox
-    const handleAnonymousChange = (e) => {
-        setForm({ ...form, is_anonymous: e.target.checked });
+    // Handle clear all categories
+    const handleClearAllKategori = () => {
+        setForm({ ...form, kategori_ids: [] });
     };
 
     const handleSubmitPolling = async () => {
@@ -99,8 +116,19 @@ const HomePage = () => {
             return;
         }
 
+        if (!form.custom_name.trim()) {
+            setError('Nama untuk ditampilkan tidak boleh kosong');
+            return;
+        }
+
         try {
-            const res = await axios.post('/user/polling', form, {
+            // Always set is_anonymous to true since we're using custom name
+            const formData = {
+                ...form,
+                is_anonymous: true
+            };
+
+            const res = await axios.post('/user/polling', formData, {
                 headers: { Authorization: `Bearer ${userToken}` }
             });
 
@@ -110,6 +138,7 @@ const HomePage = () => {
             if (err.response?.status === 401) {
                 localStorage.setItem('user_token', '');
                 setUserToken(null);
+                setUserInfo(null);
                 setError('silakan login kembali');
                 setShowLogin(true);
                 return;
@@ -143,8 +172,19 @@ const HomePage = () => {
             return;
         }
 
+        if (!form.custom_name.trim()) {
+            setError('Nama untuk ditampilkan tidak boleh kosong');
+            return;
+        }
+
         try {
-            const res = await axios.post('/user/polling-free', form, {
+            // Always set is_anonymous to true since we're using custom name
+            const formData = {
+                ...form,
+                is_anonymous: true
+            };
+
+            const res = await axios.post('/user/polling-free', formData, {
                 headers: { Authorization: `Bearer ${userToken}` }
             });
 
@@ -154,6 +194,7 @@ const HomePage = () => {
             if (err.response?.status === 401) {
                 localStorage.setItem('user_token', '');
                 setUserToken(null);
+                setUserInfo(null);
                 setError('silakan login kembali');
                 setShowLogin(true);
                 return;
@@ -169,10 +210,20 @@ const HomePage = () => {
             const token = res.data.token;
             localStorage.setItem('token', token);
             setUserToken(token);
+            setUserInfo(res.data.user); // Set user info from login response
             setShowLogin(false);
         } catch (err) {
             setError(err.response?.data?.message || 'Gagal login');
         }
+    };
+
+    // Handle logout
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setUserToken(null);
+        setUserInfo(null);
+        setShowLogin(true);
+        setForm({ kalimat: '', kategori_ids: [], custom_name: '' }); // Reset form
     };
 
     return (
@@ -187,6 +238,30 @@ const HomePage = () => {
                 </div>
                 <div className='col-md-4 col-sm-12 text-center' style={{ alignContent: 'center' }}>
                     <h4 className='text-white'>{WEB_NAME}</h4>
+                    
+                    {/* Welcome Message for Logged In User */}
+                    {userToken && userInfo && (
+                        <div className="card mt-4 p-3 m-5 bg-success bg-opacity-10 border-success">
+                            <div className="d-column align-items-center justify-content-between">
+                                <div className="text-start">
+                                    <h5 className="text-white mb-1">
+                                        <i className="ph ph-user-circle me-2"></i>
+                                        Hello, {userInfo.name}!
+                                    </h5>
+                                </div>
+                                <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={handleLogout}
+                                    title="Logout"
+                                >
+                                    <i className="ph ph-sign-out"></i>
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Login/Register Forms - Only show if not logged in */}
                     {!userToken && (
                         <div className="card mt-4 p-3 m-5">
                             {showLogin && (
@@ -212,8 +287,9 @@ const HomePage = () => {
                                 <>
                                     <h5>Registrasi</h5>
                                     <RegisterForm
-                                        onSuccess={(token) => {
+                                        onSuccess={(token, user) => {
                                             setUserToken(token);
+                                            setUserInfo(user); // Set user info from register response
                                             setShowRegister(false);
                                         }}
                                     />
@@ -239,133 +315,106 @@ const HomePage = () => {
                         <h5 className='mt-5'>Buat Kata-kata/Quote/Pesan</h5>
                         {error && <div className="alert alert-danger">{error}</div>}
                         
-                        {/* Multiple Category Selection Dropdown with Checkbox Style */}
+                        {/* Show message if not logged in */}
+                        {!userToken && (
+                            <div className="alert alert-warning d-flex align-items-center mb-4">
+                                <i className="ph ph-warning-circle me-2"></i>
+                                <div>
+                                    <strong>Perhatian:</strong> Silakan login terlebih dahulu untuk membuat kata-kata/quote/pesan.
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* Category Selection - Simple Checkbox List */}
                         <div className="mb-3">
-                            <label className="form-label fw-bold">Pilih Kategori (bisa lebih dari satu):</label>
-                            <div className="dropdown-multiple-select">
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center"
-                                    onClick={() => setShowDropdown(!showDropdown)}
-                                    style={{ 
-                                        backgroundColor: 'white',
-                                        borderColor: '#ced4da',
-                                        color: form.kategori_ids.length === 0 ? '#6c757d' : '#212529'
-                                    }}
-                                >
-                                    <span>{getSelectedKategoriNames()}</span>
-                                    <i className={`ph ph-caret-${showDropdown ? 'up' : 'down'}`}></i>
-                                </button>
-                                
-                                {showDropdown && (
-                                    <div 
-                                        className="dropdown-menu show w-100 p-2" 
-                                        style={{ 
-                                            position: 'absolute', 
-                                            zIndex: 1000,
-                                            maxHeight: '200px',
-                                            overflowY: 'auto',
-                                            border: '1px solid #ced4da',
-                                            borderRadius: '0.375rem',
-                                            boxShadow: '0 0.125rem 0.25rem rgba(0,0,0,0.075)'
-                                        }}
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                <label className="form-label fw-bold mb-0">
+                                    <i className="ph ph-folder-open me-2 text-primary"></i>
+                                    Pilih Kategori (bisa lebih dari satu):
+                                </label>
+                                <div className="btn-group btn-group-sm" role="group">
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary btn-sm"
+                                        onClick={handleSelectAllKategori}
+                                        disabled={form.kategori_ids.length === kategoriList.length || !userToken}
                                     >
+                                        <i className="ph ph-check-square me-1"></i>
+                                        Pilih Semua
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger btn-sm"
+                                        onClick={handleClearAllKategori}
+                                        disabled={form.kategori_ids.length === 0 || !userToken}
+                                    >
+                                        <i className="ph ph-x-square me-1"></i>
+                                        Hapus Semua
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Categories Grid */}
+                            <div 
+                                className={`categories-container p-3 border rounded ${!userToken ? 'opacity-50' : ''}`}
+                                style={{ 
+                                    backgroundColor: '#f8f9fa',
+                                    maxHeight: '200px',
+                                    overflowY: 'auto'
+                                }}
+                            >
+                                {kategoriList.length > 0 ? (
+                                    <div className="row g-2">
                                         {kategoriList.map(kategori => (
-                                            <div key={kategori.id} className="dropdown-item p-1">
-                                                <div className="form-check">
+                                            <div key={kategori.id} className="col-md-6 col-12">
+                                                <div 
+                                                    className={`d-flex align-items-center p-3 rounded transition-all ${
+                                                        form.kategori_ids.includes(kategori.id) 
+                                                            ? 'bg-primary bg-opacity-10 border border-primary' 
+                                                            : 'bg-white border border-light hover-shadow'
+                                                    }`}
+                                                    style={{ 
+                                                        cursor: userToken ? 'pointer' : 'not-allowed',
+                                                        transition: 'all 0.2s ease'
+                                                    }}
+                                                    onClick={() => userToken && handleKategoriChange(kategori.id)}
+                                                >
                                                     <input
-                                                        className="form-check-input"
+                                                        className="form-check-input me-3 flex-shrink-0"
                                                         type="checkbox"
                                                         id={`kategori-${kategori.id}`}
                                                         checked={form.kategori_ids.includes(kategori.id)}
-                                                        onChange={() => handleKategoriChange(kategori.id)}
+                                                        onChange={() => userToken && handleKategoriChange(kategori.id)}
+                                                        disabled={!userToken}
+                                                        style={{ cursor: userToken ? 'pointer' : 'not-allowed' }}
                                                     />
                                                     <label 
-                                                        className="form-check-label w-100" 
+                                                        className="form-check-label fw-medium flex-grow-1" 
                                                         htmlFor={`kategori-${kategori.id}`}
-                                                        style={{ cursor: 'pointer' }}
+                                                        style={{ cursor: userToken ? 'pointer' : 'not-allowed' }}
                                                     >
+                                                        <i className="ph ph-tag me-2 text-primary"></i>
                                                         {kategori.nama}
                                                     </label>
                                                 </div>
                                             </div>
                                         ))}
-                                        
-                                        {form.kategori_ids.length > 0 && (
-                                            <div className="dropdown-divider"></div>
-                                        )}
-                                        
-                                        {/* Action buttons - always show */}
-                                        <div className="dropdown-item-text text-center">
-                                            {form.kategori_ids.length > 0 && (
-                                                <>
-                                                    <small className="text-muted mb-2 d-block">
-                                                        <i className="ph ph-check-circle me-1"></i>
-                                                        {form.kategori_ids.length} kategori dipilih
-                                                    </small>
-                                                </>
-                                            )}
-                                            
-                                            <div className="d-flex gap-2 justify-content-center">
-                                                {form.kategori_ids.length > 0 && (
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-sm btn-danger"
-                                                        onClick={() => setForm({ ...form, kategori_ids: [] })}
-                                                    >
-                                                        <i className="ph ph-x me-1"></i>
-                                                        Hapus Semua
-                                                    </button>
-                                                )}
-                                                
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-sm btn-primary"
-                                                    onClick={() => setShowDropdown(false)}
-                                                >
-                                                    <i className="ph ph-check me-1"></i>
-                                                    Konfirmasi
-                                                </button>
-                                            </div>
-                                            
-                                            {form.kategori_ids.length === 0 && (
-                                                <small className="text-muted mt-1 d-block">
-                                                    Pilih minimal satu kategori untuk melanjutkan
-                                                </small>
-                                            )}
-                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="text-center text-muted py-3">
+                                        <i className="ph ph-folder-simple-dashed display-4 mb-2"></i>
+                                        <p className="mb-0">Tidak ada kategori tersedia</p>
                                     </div>
                                 )}
                             </div>
-                            
-                            {/* Selected categories preview */}
-                            {form.kategori_ids.length > 0 && (
-                                <div className="mt-2">
-                                    <small className="text-muted">Kategori dipilih:</small>
-                                    <div className="d-flex flex-wrap gap-1 mt-1">
-                                        {form.kategori_ids.map(id => {
-                                            const kategori = kategoriList.find(k => k.id === id);
-                                            return (
-                                                <span key={id} className="badge bg-primary">
-                                                    {kategori?.nama}
-                                                    <button
-                                                        type="button"
-                                                        className="btn-close btn-close-white ms-1"
-                                                        style={{ fontSize: '0.7em' }}
-                                                        onClick={() => handleKategoriChange(id)}
-                                                        aria-label="Remove"
-                                                    ></button>
-                                                </span>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
-                        {/* Textarea with character limit - same as before */}
+                        {/* Textarea with character limit */}
                         <div className="mb-3">
-                            <label className="form-label fw-bold">Kata-kata/Quote/Pesan:</label>
+                            <label className="form-label fw-bold">
+                                <i className="ph ph-chat-circle-text me-2 text-primary"></i>
+                                Kata-kata/Quote/Pesan:
+                            </label>
                             <textarea
                                 name="kalimat"
                                 placeholder="Tulis Kata-kata Anda di sini (maksimal 30 karakter)..."
@@ -374,61 +423,98 @@ const HomePage = () => {
                                 onChange={handleChange}
                                 rows={3}
                                 maxLength={30}
+                                disabled={!userToken}
+                                style={{ resize: 'none' }}
                             />
                             <div className="d-flex justify-content-between mt-1">
                                 <small className={`${remainingChars < 5 ? 'text-danger' : 'text-muted'}`}>
+                                    <i className="ph ph-clock me-1"></i>
                                     Sisa karakter: {remainingChars}
                                 </small>
                                 <small className="text-muted">
                                     {form.kalimat.length}/30
                                 </small>
                             </div>
+                            
+                            {remainingChars < 5 && remainingChars >= 0 && userToken && (
+                                <small className="text-warning d-block mt-1">
+                                    <i className="ph ph-warning me-1"></i>
+                                    Karakter hampir habis!
+                                </small>
+                            )}
                         </div>
 
-                        {/* Anonymous Option - same as before */}
-                        <div className="mb-3">
-                            <div className="form-check">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    id="anonymous-check"
-                                    checked={form.is_anonymous}
-                                    onChange={handleAnonymousChange}
-                                />
-                                <label className="form-check-label" htmlFor="anonymous-check">
-                                    <i className="ph ph-mask me-1"></i>
-                                    Tulis Sebagai Anonim
-                                </label>
+                        {/* Custom Name Input - Always Visible and Required */}
+                        <div className="mb-4">
+                            <label className="form-label fw-bold">
+                                <i className="ph ph-user-circle me-2 text-primary"></i>
+                                Nama yang akan ditampilkan:
+                                <span className="text-danger ms-1">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="custom_name"
+                                className={`form-control ${!form.custom_name.trim() && form.custom_name !== '' ? 'is-invalid' : ''}`}
+                                placeholder="Masukkan nama yang ingin ditampilkan..."
+                                value={form.custom_name}
+                                onChange={handleChange}
+                                maxLength={100}
+                                disabled={!userToken}
+                                required
+                            />
+                            <div className="d-flex justify-content-between mt-1">
+                                <small className="text-muted">
+                                    <i className="ph ph-info me-1"></i>
+                                    Nama ini yang akan muncul pada quote Anda
+                                </small>
+                                <small className="text-muted">
+                                    {form.custom_name.length}/100
+                                </small>
                             </div>
-                            <small className="text-muted">
-                                Jika dicentang, nama Anda tidak akan ditampilkan pada polling ini
-                            </small>
+                            {!form.custom_name.trim() && form.custom_name !== '' && userToken && (
+                                <div className="invalid-feedback">
+                                    Nama untuk ditampilkan tidak boleh kosong
+                                </div>
+                            )}
                         </div>
                         
-                        <div className='row'>
-                            <div className='col-sm-12 col-md-6 mb-2'>
-                            <button 
-                            className="btn btn-success w-100" 
-                            onClick={handleSubmitPolling}
-                            disabled={!form.kalimat.trim() || form.kategori_ids.length === 0}
-                        >
-                            <i className="ph ph-paper-plane me-2"></i>
-                            Donasi & Kirim Kata-kata
-                        </button>
-                        </div>
+                        {/* Submit Buttons */}
+                        <div className='row g-2'>
+                            <div className='col-sm-12 col-md-6'>
+                                <button 
+                                    className="btn btn-success w-100 py-3" 
+                                    onClick={handleSubmitPolling}
+                                    disabled={!userToken || !form.kalimat.trim() || form.kategori_ids.length === 0 || !form.custom_name.trim()}
+                                >
+                                    <i className="ph ph-heart-straight-fill me-2"></i>
+                                    Donasi & Kirim Kata-kata
+                                </button>
+                            </div>
 
-                        <div className='col-sm-12 col-md-6 mb-2'>
-                        <button 
-                            className="btn btn-secondary w-100" 
-                            onClick={handleSubmitPollingFree}
-                            disabled={!form.kalimat.trim() || form.kategori_ids.length === 0}
-                        >
-                            <i className="ph ph-paper-plane me-2"></i>
-                            Ikut Polling Tanpa Donasi
-                        </button>
-                        </div>
+                            <div className='col-sm-12 col-md-6'>
+                                <button 
+                                    className="btn btn-secondary w-100 py-3" 
+                                    onClick={handleSubmitPollingFree}
+                                    disabled={!userToken || !form.kalimat.trim() || form.kategori_ids.length === 0 || !form.custom_name.trim()}
+                                >
+                                    <i className="ph ph-paper-plane me-2"></i>
+                                    Ikut Polling Tanpa Donasi
+                                </button>
+                            </div>
                         </div>
                         
+                        {/* Form Validation Helper */}
+                        {userToken && (!form.kalimat.trim() || form.kategori_ids.length === 0 || !form.custom_name.trim()) && (
+                            <div className="alert alert-info mt-3 d-flex align-items-center">
+                                <i className="ph ph-lightbulb me-2"></i>
+                                <div>
+                                    <strong>Tips:</strong> 
+                                    {!form.kalimat.trim() && ' Tulis kata-kata Anda terlebih dahulu.'}
+                                    {form.kategori_ids.length === 0 && ' Pilih minimal satu kategori.'}
+                                    {!form.custom_name.trim() && ' Masukkan nama yang ingin ditampilkan.'}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

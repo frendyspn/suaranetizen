@@ -18,6 +18,8 @@ use App\Http\Controllers\SettingController;
 
 use App\Http\Controllers\TeamController;
 
+use App\Http\Controllers\UserController;
+
 
 use App\Http\Controllers\Admin\GalleryController as GalleryController;
 
@@ -105,7 +107,7 @@ Route::prefix('user')->group(function () {
 
         Route::post('/polling-vote', [PollingController::class, 'vote']);
 
-        
+        Route::get('/profile', [UserController::class, 'profile']);
         
 
     });

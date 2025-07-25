@@ -16,6 +16,7 @@ class Polling extends Model
         'kalimat',
         'kategori_id',
         'kategori_ids',
+        'custom_name',
         'is_anonymous',
         'donasi_id', 
         'status',

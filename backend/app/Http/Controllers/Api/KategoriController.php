@@ -13,7 +13,7 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        return Kategori::orderBy('created_at', 'desc')->get();
+        return Kategori::orderBy('created_at', 'desc')->where('is_active', '1')->get();
     }
 
     /**

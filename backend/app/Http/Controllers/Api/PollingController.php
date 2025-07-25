@@ -43,13 +43,14 @@ class PollingController extends Controller
             'kalimat' => 'required|string|max:30',
             'kategori_ids' => 'required|array|min:1',
             'kategori_ids.*' => 'exists:kategoris,id',
-            'is_anonymous' => 'boolean'
+            'custom_name' => 'required|string|max:100'
         ], [
             'kalimat.required' => 'Kata-kata tidak boleh kosong',
             'kalimat.max' => 'Kata-kata maksimal 30 karakter',
             'kategori_ids.required' => 'Pilih minimal satu kategori',
             'kategori_ids.min' => 'Pilih minimal satu kategori',
-            'kategori_ids.*.exists' => 'Kategori yang dipilih tidak valid'
+            'kategori_ids.*.exists' => 'Kategori yang dipilih tidak valid',
+            'custom_name.required' => 'Nama Anda Harus Diisi'
         ]);
 
         $donasi = Donasi::where('is_active', true)->where('status', 'onprogress')->first();
@@ -61,7 +62,7 @@ class PollingController extends Controller
             'kalimat' => $request->kalimat,
             'kategori_id' => $request->kategori_ids[0], // Keep first category for backward compatibility
             'kategori_ids' => $request->kategori_ids,
-            'is_anonymous' => $request->is_anonymous ?? false,
+            'custom_name' => $request->custom_name,
             'user_id' => $request->user()->id,
             'donasi_id' => $donasi->id,
             'status' => 'pending',
@@ -82,13 +83,14 @@ class PollingController extends Controller
             'kalimat' => 'required|string|max:30',
             'kategori_ids' => 'required|array|min:1',
             'kategori_ids.*' => 'exists:kategoris,id',
-            'is_anonymous' => 'boolean'
+            'custom_name' => 'required|string|max:100'
         ], [
             'kalimat.required' => 'Kata-kata tidak boleh kosong',
             'kalimat.max' => 'Kata-kata maksimal 30 karakter',
             'kategori_ids.required' => 'Pilih minimal satu kategori',
             'kategori_ids.min' => 'Pilih minimal satu kategori',
-            'kategori_ids.*.exists' => 'Kategori yang dipilih tidak valid'
+            'kategori_ids.*.exists' => 'Kategori yang dipilih tidak valid',
+            'custom_name.required' => 'Nama Anda Harus Diisi'
         ]);
 
         // Create polling
@@ -96,7 +98,7 @@ class PollingController extends Controller
             'kalimat' => $request->kalimat,
             'kategori_id' => $request->kategori_ids[0],
             'kategori_ids' => $request->kategori_ids,
-            'is_anonymous' => $request->is_anonymous ?? false,
+            'custom_name' => $request->custom_name,
             'user_id' => $request->user()->id,
             'donasi_id' => null,
             'status' => 'paid', // Status langsung paid
