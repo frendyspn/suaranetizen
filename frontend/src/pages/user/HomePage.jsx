@@ -228,7 +228,7 @@ const HomePage = () => {
 
     return (
         <>
-        <GallerySlideshow />
+        
         
         <div className="rounded p-5" style={{ backgroundColor: '#3053a7' }}>
             <div className='row'>
@@ -237,6 +237,7 @@ const HomePage = () => {
                     <hr className='border-white' />
                 </div>
                 <div className='col-md-4 col-sm-12 text-center' style={{ alignContent: 'center' }}>
+                    <GallerySlideshow />
                     <h4 className='text-white'>{WEB_NAME}</h4>
                     
                     {/* Welcome Message for Logged In User */}
@@ -312,6 +313,7 @@ const HomePage = () => {
                 </div>
                 <div className='col-md-8 col-sm-12'>
                     <div className='bg-white rounded m-5 p-3'>
+                        
                         <h5 className='mt-5'>Buat Kata-kata/Quote/Pesan</h5>
                         {error && <div className="alert alert-danger">{error}</div>}
                         
@@ -335,7 +337,7 @@ const HomePage = () => {
                                 <div className="btn-group btn-group-sm" role="group">
                                     <button
                                         type="button"
-                                        className="btn btn-primary btn-sm"
+                                        className="btn btn-primary btn-sm py-1"
                                         onClick={handleSelectAllKategori}
                                         disabled={form.kategori_ids.length === kategoriList.length || !userToken}
                                     >
@@ -344,7 +346,7 @@ const HomePage = () => {
                                     </button>
                                     <button
                                         type="button"
-                                        className="btn btn-danger btn-sm"
+                                        className="btn btn-danger btn-sm py-1"
                                         onClick={handleClearAllKategori}
                                         disabled={form.kategori_ids.length === 0 || !userToken}
                                     >
@@ -445,7 +447,7 @@ const HomePage = () => {
                         </div>
 
                         {/* Custom Name Input - Always Visible and Required */}
-                        <div className="mb-4">
+                        <div className="mb-4 ">
                             <label className="form-label fw-bold">
                                 <i className="ph ph-user-circle me-2 text-primary"></i>
                                 Nama yang akan ditampilkan:
