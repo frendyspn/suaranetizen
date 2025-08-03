@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../../axios';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import CKEditorComponent from '../../components/CKEditor5Component';
+
 
 export default function BillboardForm() {
     const [content, setContent] = useState('');
@@ -41,16 +41,12 @@ export default function BillboardForm() {
                 {saved && <div className="alert alert-success">Billboard berhasil disimpan!</div>}
                 <form onSubmit={submit}>
                     <div className="ckeditor-wrapper">
-                        <CKEditor
-                            editor={ClassicEditor}
+                        <CKEditorComponent
                             data={content}
-                            onChange={(event, editor) => {
-                                setContent(editor.getData());
+                            onChange={(editorData) => {
+                                setContent(editorData);
                             }}
-                            config={{
-                                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'outdent', 'indent', '|', 'blockQuote', 'insertTable', 'undo', 'redo'],
-                                height: 400
-                            }}
+                            height="400px"
                         />
                     </div>
                     <button className="btn btn-success mt-3">Simpan Billboard</button>

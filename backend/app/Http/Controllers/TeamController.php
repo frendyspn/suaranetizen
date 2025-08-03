@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Team;
+use Illuminate\Support\Facades\Storage;
 
 class TeamController extends Controller
 {
@@ -20,9 +20,9 @@ class TeamController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->store('teams', 'public_uploads');
+            $file = $request->file('photo');
+            $data['photo'] = $file->store('teams', 'public_uploads');
         }
-
 
         $team = Team::create($data);
         return response()->json($team, 201);
@@ -41,14 +41,16 @@ class TeamController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            
             // Hapus foto lama jika ada
             if ($team->photo && Storage::disk('public_uploads')->exists($team->photo)) {
                 Storage::disk('public_uploads')->delete($team->photo);
             }
-            // Simpan file ke folder 'teams' di disk 'public_uploads'
-            $data['photo'] = $request->file('photo')->store('teams', 'public_uploads');
+            
+            // Simpan file baru ke folder 'teams' di disk 'public_uploads'
+            $data['photo'] = $file->store('teams', 'public_uploads');
         }
-
 
         $team->update($data);
         return response()->json($team);
@@ -56,7 +58,13 @@ class TeamController extends Controller
 
     public function destroy($id) {
         $team = Team::findOrFail($id);
+        
+        // Hapus foto saat menghapus team member
+        if ($team->photo && Storage::disk('public_uploads')->exists($team->photo)) {
+            Storage::disk('public_uploads')->delete($team->photo);
+        }
+        
         $team->delete();
-        return response()->json(['message' => 'Deleted']);
+        return response()->json(['message' => 'Team member deleted successfully']);
     }
 }

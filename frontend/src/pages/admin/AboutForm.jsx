@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../../axios';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import CKEditor5Component from '../../components/CKEditor5Component';
+import { editorConfigs } from '../../components/CKEditorConfigs';
+
 
 export default function AboutForm() {
     const [content, setContent] = useState('');
@@ -36,16 +37,20 @@ export default function AboutForm() {
             <div className='card-body'>
                 {saved && <div className="alert alert-success">Tersimpan!</div>}
                 <form onSubmit={submit}>
-                    <CKEditor
-                        editor={ClassicEditor}
+                    {/* <CKEditorComponent
                         data={content}
                         onChange={(event, editor) => {
                             setContent(editor.getData());
                         }}
-                        config={{
-                            toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'outdent', 'indent', '|', 'blockQuote', 'insertTable', 'undo', 'redo'],
-                        }}
-                    />
+                        height="400px"
+                    /> */}
+                    <CKEditor5Component
+            data={content}
+            onChange={setContent}
+            placeholder="Type something..."
+            height="300px"
+            mode="full"
+          />
                     <button className="btn btn-success mt-3">Simpan</button>
                 </form>
             </div>

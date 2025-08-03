@@ -62,6 +62,11 @@ export default function SettingPage() {
                     </div>
 
                     <div>
+                        <label>Alamat</label>
+                        <textarea name="address" id="" value={settings.address || ""} onChange={handleChange} className="input form-control" placeholder="Alamat"></textarea>
+                    </div>
+
+                    <div>
                         <label>Logo</label>
                         {
                             settings.site_logo && (
