@@ -17,21 +17,19 @@ const Navbar = () => {
     };
 
     return (
+        <>
+            <div className='navbar d-block justify-content-between align-items-center p-3 bg-light' >
+                <HeaderBanner />
 
-
-        <div className='navbar d-block justify-content-between align-items-center p-3 bg-light' >
-            <HeaderBanner />
-
-
-            <div
-                className={`menu-scroll d-md-flex gap-16 py-10`}
-                style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',      // menu akan turun ke bawah jika overlap
-                    maxWidth: '100%',
-                    scrollbarWidth: 'thin'
-                }}
-            >
+                <div
+                    className={`menu-scroll d-md-flex gap-16 py-10`}
+                    style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        maxWidth: '100%',
+                        scrollbarWidth: 'thin'
+                    }}
+                >
 
                 <a href="/" type="button" className={`text-gray-500 ${currentPath === '/' && 'fw-bold'}`}>Home</a>
 
@@ -45,23 +43,23 @@ const Navbar = () => {
 
                 <div className='border border-dark'></div>
 
-                <a href="/result" type="button" className={`text-gray-500 ${currentPath === '/result' && 'fw-bold'}`}>Result</a>
+                <a href="/result" type="button" className={`text-gray-500 ${currentPath === '/result' && 'fw-bold'}`}>Hasil Poling</a>
 
                 <div className='border border-dark'></div>
 
-                <a href="/quotes" type="button" className={`text-gray-500 ${currentPath === '/quotes' && 'fw-bold'}`}>Quote Terbit</a>
+                <a href="/quotes" type="button" className={`text-gray-500 ${currentPath === '/quotes' && 'fw-bold'}`}>Kata-kata Terbit</a>
 
                 <div className='border border-dark'></div>
 
-                <a href="/team" type="button" className={`text-gray-500 ${currentPath === '/team' && 'fw-bold'}`}>Tim</a>
+                <a href="/team" type="button" className={`text-gray-500 ${currentPath === '/team' && 'fw-bold'}`}>Kontak</a>
 
                 <div className='border border-dark'></div>
 
-                <a href="/gallery" type="button" className={`text-gray-500 ${currentPath === '/gallery' && 'fw-bold'}`}>Gallery</a>
+                <a href="/gallery" type="button" className={`text-gray-500 ${currentPath === '/gallery' && 'fw-bold'}`}>Galery</a>
 
                 <div className='border border-dark'></div>
 
-                <a href="/billboard" type="button" className={`text-gray-500 ${currentPath === '/billboard' && 'fw-bold'}`}>Penerbitan Billboard</a>
+                <a href="/billboard" type="button" className={`text-gray-500 ${currentPath === '/billboard' && 'fw-bold'}`}>Alur Penerbitan</a>
 
                 
 
@@ -85,6 +83,7 @@ const Navbar = () => {
                 </form> */}
             </div>
         </div>
+        </>
     );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from '../../axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,10 +6,12 @@ import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 
 import { WEB_NAME } from '../../constants';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const HomePage = () => {
     const [kategoriList, setKategoriList] = useState([]);
     const [pengantar, setPengantar] = useState('');
+    const [blinkingText, setBlinkingText] = useState('Selamat datang di platform polling terpercaya!');
     const [form, setForm] = useState({ 
         kalimat: '', 
         kategori_ids: [], 
@@ -21,10 +23,7 @@ const HomePage = () => {
     const [showRegister, setShowRegister] = useState(false);
     const [showPaymentPopup, setShowPaymentPopup] = useState(false);
 
-    // Local state for auth
-    const [userToken, setUserToken] = useState(localStorage.getItem('user_token'));
-    const [userInfo, setUserInfo] = useState(null);
-
+    const { userToken, userInfo, setUserToken, setUserInfo } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,6 +33,7 @@ const HomePage = () => {
 
         axios.get('/user/introduction').then(res => {
             setPengantar(res.data?.content || '');
+            setBlinkingText(res.data?.blinking_text || 'Selamat datang di platform polling terpercaya!');
         });
 
         // Fetch user info if token exists
@@ -133,63 +133,6 @@ const HomePage = () => {
         setShowPaymentPopup(true);
     };
 
-    // Handle submit polling free (without donation)
-    const handleSubmitPollingFree = async () => {
-        console.log('Free Polling');
-        setError('');
-        
-        // Validation
-        if (!userToken) {
-            setError('Silahkan Login Lebih Dahulu');
-            return;
-        }
-
-        if (!form.kalimat.trim()) {
-            setError('Kata-kata tidak boleh kosong');
-            return;
-        }
-
-        if (form.kalimat.length > 30) {
-            setError('Kata-kata maksimal 30 karakter');
-            return;
-        }
-
-        if (form.kategori_ids.length === 0) {
-            setError('Pilih minimal satu kategori');
-            return;
-        }
-
-        if (!form.custom_name.trim()) {
-            setError('Nama untuk ditampilkan tidak boleh kosong');
-            return;
-        }
-
-        try {
-            // Always set is_anonymous to true since we're using custom name
-            const formData = {
-                ...form,
-                is_anonymous: true
-            };
-
-            const res = await axios.post('/user/polling-free', formData, {
-                headers: { Authorization: `Bearer ${userToken}` }
-            });
-
-            navigate(`/polling/${res.data.polling.id}`);
-        } catch (err) {
-            console.log(err.response);
-            if (err.response?.status === 401) {
-                localStorage.removeItem('user_token');
-                setUserToken(null);
-                setUserInfo(null);
-                setError('silakan login kembali');
-                setShowLogin(true);
-                return;
-            }
-            setError(err.response?.data?.message || 'Gagal submit polling');
-        }
-    };
-
     // Handle confirm payment and submit
     const handleConfirmPayment = async () => {
         try {
@@ -222,12 +165,75 @@ const HomePage = () => {
 
     return (
         <>
+            {/* Hero Section with Header */}
+            <header style={{
+                textAlign: 'center',
+                padding: 0,
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '120px',
+                background: '#fff',
+                zIndex: 1000,
+                overflow: 'hidden'
+            }}>
+                <img src="/assets/images/header-banner.jpg" alt="Header" style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                }} />
+            </header>
+
+            {/* Navigation */}
+            <nav style={{
+                display: 'flex',
+                justifyContent: 'center',
+                background: '#fff',
+                flexWrap: 'wrap',
+                position: 'fixed',
+                top: '120px',
+                left: 0,
+                width: '100%',
+                zIndex: 1001,
+                overflowX: 'auto',
+                whiteSpace: 'nowrap',
+                padding: '5px 0'
+            }}>
+                <a href="#" style={{ padding: '10px 15px', textDecoration: 'none', color: 'black', fontWeight: 'bold' }}>Beranda</a>
+                <a href="#polling" style={{ padding: '10px 15px', textDecoration: 'none', color: 'black', fontWeight: 'bold', borderLeft: '1px solid #ccc' }}>Polling</a>
+                <a href="#tentang" style={{ padding: '10px 15px', textDecoration: 'none', color: 'black', fontWeight: 'bold', borderLeft: '1px solid #ccc' }}>Tentang</a>
+                <a href="#kontak" style={{ padding: '10px 15px', textDecoration: 'none', color: 'black', fontWeight: 'bold', borderLeft: '1px solid #ccc' }}>Kontak</a>
+            </nav>
+
+            {/* Blinking Text */}
+            <div style={{
+                position: 'fixed',
+                top: '165px',
+                left: 0,
+                width: '100%',
+                backgroundColor: '#0066cc',
+                color: 'white',
+                padding: '12px 0',
+                zIndex: 1000,
+                textAlign: 'center',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+            }}>
+                <div style={{
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    animation: 'blink 1.5s linear infinite'
+                }}>
+                    {blinkingText}
+                </div>
+            </div>
+
             {/* Main Content */}
-            <div className="main-content-mobile" style={{
+            <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
                 justifyContent: 'center',
-                padding: '20px' // Normal padding karena tidak ada fixed elements lagi
+                padding: '220px 20px 20px 20px'
             }}>
                 {/* Login/User Box */}
                 {!userToken ? (
@@ -304,7 +310,7 @@ const HomePage = () => {
                         textAlign: 'center',
                         position: 'relative'
                     }}>
-                        <h3 id="welcomeMessage">Hai, {userInfo?.user?.name}!</h3>
+                        <h3 id="welcomeMessage">Hai, {userInfo?.name}!</h3>
                         <button
                             onClick={handleLogout}
                             style={{
@@ -333,7 +339,7 @@ const HomePage = () => {
                     border: '1px solid #ccc',
                     padding: '20px'
                 }}>
-                    <h3>Buat Kata-kata Anda hari ini untuk dijadikan billboard dan diterbitkan di Jantung Ibu Kota! (perlu login)</h3>
+                    <h3>Buat Kata-kata Anda hari ini atau Quote untuk kami terbitkan!</h3>
                     
                     <p>Pilih Kategori:</p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
@@ -372,16 +378,9 @@ const HomePage = () => {
                             resize: 'vertical',
                             minHeight: '50px',
                             maxHeight: '150px',
-                            overflowY: 'auto',
-                            boxSizing: 'border-box'
+                            overflowY: 'auto'
                         }}
                         disabled={!userToken}
-                        onFocus={(e) => e.target.placeholder = ''}
-                        onBlur={(e) => {
-                            if (e.target.value.trim() === '') {
-                                e.target.placeholder = 'Tulis Kata-kata Anda di sini (maksimal 30 karakter)...';
-                            }
-                        }}
                     />
                     <div style={{ textAlign: 'right', fontSize: '12px', color: '#666', marginTop: '-10px', marginBottom: '10px' }}>
                         <span>{form.kalimat.length}</span>/30 karakter
@@ -393,12 +392,7 @@ const HomePage = () => {
                         value={form.custom_name}
                         onChange={handleChange}
                         placeholder="Nama Anda"
-                        style={{ 
-                            width: '100%', 
-                            margin: '5px 0', 
-                            padding: '8px',
-                            boxSizing: 'border-box'
-                        }}
+                        style={{ width: '100%', margin: '5px 0', padding: '8px' }}
                         disabled={!userToken}
                     />
 
@@ -424,23 +418,21 @@ const HomePage = () => {
                         </button>
                         
                         <button
-                            onClick={handleSubmitPollingFree}
-                            disabled={!userToken || !form.kalimat.trim() || form.kategori_ids.length === 0 || !form.custom_name.trim()}
+                            onClick={() => navigate('/polling')}
                             style={{
                                 width: '100%',
                                 padding: '12px',
-                                background: !userToken || !form.kalimat.trim() || form.kategori_ids.length === 0 || !form.custom_name.trim() ? '#cccccc' : '#f8f9fa',
-                                color: !userToken || !form.kalimat.trim() || form.kategori_ids.length === 0 || !form.custom_name.trim() ? '#666666' : '#0066cc',
+                                background: '#f8f9fa',
+                                color: '#0066cc',
                                 border: '2px solid #0066cc',
                                 borderRadius: '6px',
                                 fontWeight: 'bold',
                                 textAlign: 'center',
                                 textDecoration: 'none',
-                                cursor: userToken && form.kalimat.trim() && form.kategori_ids.length > 0 && form.custom_name.trim() ? 'pointer' : 'not-allowed',
+                                cursor: 'pointer',
                                 transition: 'all 0.3s ease',
                                 boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                                display: 'block',
-                                opacity: !userToken || !form.kalimat.trim() || form.kategori_ids.length === 0 || !form.custom_name.trim() ? 0.6 : 1
+                                display: 'block'
                             }}
                         >
                             Ikut Polling Tanpa Donasi
@@ -568,51 +560,10 @@ const HomePage = () => {
                     box-shadow: none !important;
                 }
 
-                /* Placeholder styling untuk konsistensi dengan template */
-                input[type="text"]::placeholder,
-                input[type="email"]::placeholder,
-                input[type="password"]::placeholder,
-                textarea::placeholder {
-                    color: #999;
-                    opacity: 1;
-                    font-style: italic;
-                }
-
-                input[type="text"]:focus::placeholder,
-                input[type="email"]:focus::placeholder,
-                input[type="password"]:focus::placeholder,
-                textarea:focus::placeholder {
-                    opacity: 0;
-                }
-
-                /* Input styling konsisten dengan template */
-                input[type="text"],
-                input[type="email"], 
-                input[type="password"],
-                textarea {
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    font-family: Arial, sans-serif;
-                    font-size: 14px;
-                    transition: border-color 0.3s ease;
-                }
-
-                input[type="text"]:focus,
-                input[type="email"]:focus,
-                input[type="password"]:focus,
-                textarea:focus {
-                    border-color: #0066cc;
-                    outline: none;
-                    box-shadow: 0 0 3px rgba(0, 102, 204, 0.3);
-                }
-
-                input[type="text"]:disabled,
-                input[type="email"]:disabled,
-                input[type="password"]:disabled,
-                textarea:disabled {
-                    background-color: #f5f5f5;
-                    color: #999;
-                    cursor: not-allowed;
+                @media(max-width: 768px) {
+                    nav { top: 100px !important; }
+                    .blinking-container { top: 145px !important; }
+                    .content { padding-top: 200px !important; flex-direction: column !important; align-items: center !important; }
                 }
             `}</style>
         </>

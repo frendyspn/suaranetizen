@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from '../../axios';
 import { WEB_NAME } from '../../constants';
 import { formatCurrency, formatCurrencyPrefix } from '../../utils/formatCurrency';
+import Sponsor from '../../components/Sponsor';
 
 const QuotePage = () => {
     const { id } = useParams();
@@ -97,256 +98,162 @@ const QuotePage = () => {
     };
 
     return (
-        <div className="quote-page rounded p-5" style={{ backgroundColor: '#3053a7', minHeight: '100vh' }}>
-            {error && (
-                <div className="alert alert-danger mb-3 mx-5">
-                    <i className="ph ph-warning-circle me-2"></i>
-                    {error}
-                </div>
-            )}
+        <>
+            {/* Content Layout sesuai template kata_terbit.html */}
+            <div className="content" style={{
+                padding: '20px',
+                maxWidth: '1200px',
+                margin: '0 auto',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '20px'
+            }}>
+                {/* Left Column - Sponsor */}
+                <Sponsor />
 
-            <div className='row'>
-                <div className='col-md-4 col-sm-12 text-center d-flex align-items-center justify-content-center'>
-                    <div className="brand-section text-white">
-                        <i className="ph ph-trophy display-1 mb-3 text-warning"></i>
-                        <h2 className='mb-2'>Join At</h2>
-                        <h3 className='fw-bold'>{WEB_NAME}</h3>
-                        <p className="opacity-75 mt-3">
-                            Platform suara rakyat Indonesia
-                        </p>
+                {/* Right Column - Winner Container */}
+                <div className="winner-container" style={{
+                    flex: 1,
+                    minWidth: '400px',
+                    background: '#fff',
+                    padding: '30px',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                    textAlign: 'center'
+                }}>
+                    <h2 style={{
+                        color: '#0066cc',
+                        marginTop: 0,
+                        marginBottom: '20px',
+                        fontSize: '28px'
+                    }}>
+                        Selamat Buat Netizen
+                    </h2>
+                    
+                    <div className="congrat-message" style={{
+                        marginBottom: '30px',
+                        lineHeight: '1.6',
+                        color: '#333'
+                    }}>
+                        Selamat Kata-kata yang Anda buat mendapatkan suara terbanyak dan akan ditayangkan pada papan iklan billboard di Jantung Ibu Kota Jakarta. Terima kasih atas partisipasi dan donasi dari seluruh Netizen+62
                     </div>
-                </div>
-                
-                <div className='col-md-8 col-sm-12'>
-                    <div className='bg-white rounded-4 shadow-lg m-3 m-md-5 overflow-hidden'>
-                        
-                        {/* Header Section */}
-                        <div className="header-section bg-gradient text-white p-4 text-center position-relative overflow-hidden">
-                            <div className="header-decoration position-absolute top-0 start-0 w-100 h-100 opacity-10">
-                                <div className="d-flex justify-content-around align-items-center h-100">
-                                    <i className="ph ph-star display-1"></i>
-                                    <i className="ph ph-heart-straight-fill display-1"></i>
-                                    <i className="ph ph-trophy display-1"></i>
-                                </div>
+                    
+                    {/* Winner Quote - menggunakan data dari API jika tersedia */}
+                    {dataDonasi?.polling && dataDonasi.polling.length > 0 ? (
+                        <>
+                            <div className="winner-quote" style={{
+                                fontSize: '24px',
+                                fontWeight: 'bold',
+                                color: '#333',
+                                margin: '30px 0',
+                                padding: '20px',
+                                background: '#f5f9ff',
+                                borderLeft: '4px solid #0066cc',
+                                textAlign: 'left'
+                            }}>
+                                "{dataDonasi.polling[0]?.kalimat}"
                             </div>
                             
-                            <div className="position-relative">
-                                <div className="celebration-badge mb-3">
-                                    <span className="badge bg-warning text-dark px-4 py-2 rounded-pill">
-                                        <i className="ph ph-confetti me-2"></i>
-                                        HASIL AKHIR
-                                    </span>
-                                </div>
-                                
-                                <h1 className='display-4 fw-bold mb-2'>
-                                    🎉 Selamat! 🎉
-                                </h1>
-                                
-                                <p className="lead mb-0 opacity-90 text-warning">
-                                    Quote Terpilih Berdasarkan Suara Netizen
-                                </p>
-                                
+                            <div className="winner-name" style={{
+                                fontSize: '16px',
+                                color: '#666',
+                                marginBottom: '30px',
+                                fontStyle: 'italic'
+                            }}>
+                                - Oleh: {getUserName(dataDonasi.polling[0])} (ID: {dataDonasi.polling[0]?.id || 'N/A'})
                             </div>
-                        </div>
-
-                        {/* Quote List Section */}
-                        <div className='quote-list-section p-4'>
-                            {dataDonasi?.polling && dataDonasi.polling.length > 0 ? (
-                                <>
-                                    <div className="section-header text-center mb-4">
-                                        <h4 className="fw-bold text-primary mb-2">
-                                            <i className="ph ph-ranking me-2"></i>
-                                            Top Quote Pemenang
-                                        </h4>
-                                        <p className="text-muted">
-                                            Inilah Quote terbaik pilihan netizen Indonesia
-                                        </p>
-                                    </div>
-
-                                    <div className="quotes-container pt-20">
-                                        {dataDonasi.polling.map((polling, index) => {
-                                            const rankStyle = getRankStyle(index);
-                                            
-                                            return (
-                                                <div
-                                                    key={polling.id || index}
-                                                    className="quote-card mb-4 position-relative"
-                                                    style={{
-                                                        background: index < 3 ? 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' : '#fff',
-                                                        border: `3px solid ${index < 3 ? rankStyle.borderColor : '#dee2e6'}`,
-                                                        borderRadius: '20px',
-                                                        boxShadow: index < 3 ? `0 10px 30px rgba(0,0,0,0.15)` : '0 5px 15px rgba(0,0,0,0.08)',
-                                                        transition: 'all 0.3s ease',
-                                                        cursor: 'pointer'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.currentTarget.style.transform = 'translateY(-5px)';
-                                                        e.currentTarget.style.boxShadow = '0 15px 40px rgba(0,0,0,0.2)';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.currentTarget.style.transform = 'translateY(0)';
-                                                        e.currentTarget.style.boxShadow = index < 3 ? '0 10px 30px rgba(0,0,0,0.15)' : '0 5px 15px rgba(0,0,0,0.08)';
-                                                    }}
-                                                >
-                                                    {/* Top 3 Badge */}
-                                                    {index < 3 && (
-                                                        <div className="rank-badge position-absolute top-0 start-50 translate-middle">
-                                                            <div 
-                                                                className="d-flex align-items-center justify-content-center text-white fw-bold"
-                                                                style={{
-                                                                    width: '60px',
-                                                                    height: '60px',
-                                                                    background: rankStyle.bgColor,
-                                                                    borderRadius: '50%',
-                                                                    border: `3px solid ${rankStyle.borderColor}`,
-                                                                    fontSize: '1.2rem'
-                                                                }}
-                                                            >
-                                                                <i className={`ph ph-${rankStyle.icon} me-1`}></i>
-                                                                {index + 1}
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    <div className="p-4" style={{ marginTop: index < 3 ? '30px' : '0' }}>
-                                                        {/* Ranking Number for non-top-3 */}
-                                                        {index >= 3 && (
-                                                            <div className="d-flex align-items-center mb-3">
-                                                                <div 
-                                                                    className="rank-number me-3 d-flex align-items-center justify-content-center text-white fw-bold"
-                                                                    style={{
-                                                                        width: '40px',
-                                                                        height: '40px',
-                                                                        background: rankStyle.bgColor,
-                                                                        borderRadius: '50%',
-                                                                        fontSize: '1.1rem'
-                                                                    }}
-                                                                >
-                                                                    {index + 1}
-                                                                </div>
-                                                                <div className={`badge ${rankStyle.badgeColor} px-3 py-2`}>
-                                                                    <i className="ph ph-star me-1"></i>
-                                                                    Nominasi Terbaik
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {/* Quote Content */}
-                                                        <div className="quote-content mb-3">
-                                                            <h5 className="quote-text fw-bold mb-3" style={{ 
-                                                                fontSize: index < 3 ? '1.4rem' : '1.2rem',
-                                                                lineHeight: '1.4',
-                                                                color: '#2c3e50'
-                                                            }}>
-                                                                <i className="ph ph-quotes text-primary me-2"></i>
-                                                                "{polling?.kalimat}"
-                                                            </h5>
-
-                                                            {/* Categories */}
-                                                            {renderKategoris(polling?.kategoris || polling?.kategori)}
-                                                        </div>
-
-                                                        {/* Quote Meta Info */}
-                                                        <div className="quote-meta d-flex flex-column flex-sm-row justify-content-between align-items-start gap-3">
-                                                            <div className="author-info d-flex align-items-center">
-                                                                <div className="author-avatar me-3">
-                                                                    <div className="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
-                                                                         style={{ width: '40px', height: '40px' }}>
-                                                                        <i className="ph ph-user text-white"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="mb-0 small text-muted">Quote dari</p>
-                                                                    <p className="mb-0 fw-bold text-primary">
-                                                                        {getUserName(polling)}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="vote-stats text-end">
-                                                                <div className={`badge ${rankStyle.badgeColor} px-3 py-2 mb-2`} 
-                                                                     style={{ fontSize: '0.9rem' }}>
-                                                                    <i className="ph ph-heart-straight-fill me-2"></i>
-                                                                    {formatCurrencyPrefix(polling?.polling_votes_count || polling?.polling_votes || 0)} Suara
-                                                                </div>
-                                                                
-                                                                {polling?.nominal && (
-                                                                    <div className="small text-muted">
-                                                                        <i className="ph ph-coin me-1"></i>
-                                                                        Kontribusi: Rp {formatCurrency(polling.nominal)}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Action Buttons */}
-                                                        <div className="quote-actions mt-3 d-flex gap-2 justify-content-center">
-                                                            <div className='mb-10'>&nbsp;</div>
-                                                            {/* <button className="btn btn-outline-primary btn-sm">
-                                                                <i className="ph ph-share-network me-1"></i>
-                                                                Bagikan
-                                                            </button>
-                                                            <button className="btn btn-outline-success btn-sm">
-                                                                <i className="ph ph-heart me-1"></i>
-                                                                Apresiasi
-                                                            </button> */}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-
-                                    {/* Summary Section */}
-                                    {/* <div className="summary-section mt-5 p-4 bg-light rounded-3">
-                                        <h6 className="fw-bold mb-3 text-center">
-                                            <i className="ph ph-chart-pie me-2 text-primary"></i>
-                                            Ringkasan Campaign
-                                        </h6>
-                                        <div className="row text-center">
-                                            <div className="col-md-3 col-6 mb-3">
-                                                <div className="stat-item">
-                                                    <h4 className="text-primary fw-bold">{dataDonasi?.polling?.length || 0}</h4>
-                                                    <small className="text-muted">Total Quote</small>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-3 col-6 mb-3">
-                                                <div className="stat-item">
-                                                    <h4 className="text-success fw-bold">
-                                                        {formatCurrencyPrefix(
-                                                            dataDonasi?.polling?.reduce((acc, p) => acc + (p.polling_votes_count || p.polling_votes || 0), 0) || 0
-                                                        )}
-                                                    </h4>
-                                                    <small className="text-muted">Total Suara</small>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-3 col-6 mb-3">
-                                                <div className="stat-item">
-                                                    <h4 className="text-warning fw-bold">Rp {formatCurrency(danaTerkumpul)}</h4>
-                                                    <small className="text-muted">Dana Terkumpul</small>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-3 col-6 mb-3">
-                                                <div className="stat-item">
-                                                    <h4 className="text-info fw-bold">{Math.round(progress)}%</h4>
-                                                    <small className="text-muted">Progress Target</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> */}
-                                </>
-                            ) : (
-                                <div className="empty-state text-center py-5">
-                                    <i className="ph ph-folder-simple-dashed text-muted mb-3" style={{ fontSize: '4rem' }}></i>
-                                    <h5 className="text-muted">Belum Ada Quote</h5>
-                                    <p className="text-muted">Campaign ini belum memiliki quote yang terpilih.</p>
-                                </div>
-                            )}
-                        </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="winner-quote" style={{
+                                fontSize: '24px',
+                                fontWeight: 'bold',
+                                color: '#333',
+                                margin: '30px 0',
+                                padding: '20px',
+                                background: '#f5f9ff',
+                                borderLeft: '4px solid #0066cc',
+                                textAlign: 'left'
+                            }}>
+                                "Kebijakan sejati lahir dari mendengar suara rakyat, bukan dari gemerincing kepentingan"
+                            </div>
+                            
+                            <div className="winner-name" style={{
+                                fontSize: '16px',
+                                color: '#666',
+                                marginBottom: '30px',
+                                fontStyle: 'italic'
+                            }}>
+                                - Oleh: netizen_jaya123 (ID: N-2874)
+                            </div>
+                        </>
+                    )}
+                    
+                    <div className="billboard-specs" style={{
+                        textAlign: 'left',
+                        fontSize: '12px',
+                        marginTop: '30px',
+                        padding: '15px',
+                        background: '#f9f9f9',
+                        borderRadius: '4px',
+                        lineHeight: '1.5'
+                    }}>
+                        <div style={{ marginBottom: '5px' }}><strong>Ukuran billboard:</strong> 10m x 5m</div>
+                        <div style={{ marginBottom: '5px' }}><strong>Media:</strong> Digital LED Billboard</div>
+                        <div style={{ marginBottom: '5px' }}><strong>Tanggal:</strong> 15 Agustus 2025</div>
+                        <div style={{ marginBottom: '5px' }}><strong>Lokasi pemasangan:</strong> Bundaran HI, Jakarta Pusat</div>
+                        <div style={{ marginBottom: '5px' }}><strong>Durasi:</strong> 7 hari (24 jam non-stop)</div>
+                        <div><strong>Biaya:</strong> Rp 25.000.000 (didanai oleh donasi netizen)</div>
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* CSS Responsive sesuai template */}
+            <style jsx>{`
+                @media(max-width: 768px) {
+                    .content {
+                        flex-direction: column !important;
+                        gap: 10px !important;
+                        padding: 10px !important;
+                    }
+                    
+                    .left-column {
+                        width: 100% !important;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .winner-container h2 {
+                        font-size: 24px !important;
+                    }
+                    
+                    .winner-quote {
+                        font-size: 20px !important;
+                    }
+                }
+                
+                @media(max-width: 480px) {
+                    .winner-container {
+                        padding: 20px !important;
+                        min-width: auto !important;
+                    }
+                    
+                    .winner-container h2 {
+                        font-size: 22px !important;
+                    }
+                    
+                    .winner-quote {
+                        font-size: 18px !important;
+                        padding: 15px !important;
+                    }
+                    
+                    .billboard-specs {
+                        font-size: 11px !important;
+                        padding: 12px !important;
+                    }
+                }
+            `}</style>
+        </>
     );
 }
 

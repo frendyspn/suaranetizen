@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alur Penerbitan Billboard - Suara Netizen</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #fff; }
+        header { text-align: center; padding: 0; position: fixed; top: 0; left: 0; width: 100%; height: 120px; background: #fff; z-index: 1000; overflow: hidden; }
+        header img { width: 100%; height: 100%; object-fit: cover; }
+        nav { display: flex; justify-content: center; background: #fff; flex-wrap: wrap; position: fixed; top: 120px; left: 0; width: 100%; z-index: 1001; overflow-x: auto; white-space: nowrap; padding: 5px 0; }
+        nav a { padding: 10px 15px; text-decoration: none; color: black; font-weight: bold; border-left: 1px solid #ccc; }
+        nav a:first-child { border-left: none; }
+        nav a:hover { color: #0066cc; }
+        
+        /* Gaya untuk teks berkedip */
+        .blinking-container {
+            position: fixed;
+            top: 165px;
+            left: 0;
+            width: 100%;
+            background-color: #0066cc;
+            color: white;
+            padding: 12px 0;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .blinking-text {
+            font-size: 14px;
+            font-weight: bold;
+            animation: blink 1.5s linear infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        /* Konten */
+        .content { 
+            padding: 220px 20px 20px 20px; 
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .billboard-container {
+            width: 100%;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .billboard-container h2 {
+            color: #0066cc;
+            margin-top: 0;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        
+        .flow-image-container {
+            width: 70%; /* Diperkecil 30% dari 100% */
+            margin: 20px auto;
+            text-align: center;
+        }
+        
+        .flow-image {
+            width: 100%;
+            max-width: 100%;
+            display: block;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        footer { 
+            text-align: center; 
+            padding: 20px; 
+            background: #f5f5f5; 
+            margin-top: 20px; 
+            border-top: 1px solid #ddd;
+        }
+        
+        @media(max-width: 768px) { 
+            nav { top: 100px; } 
+            .blinking-container { top: 145px; }
+            .content { 
+                padding-top: 200px; 
+            }
+            .flow-image-container {
+                width: 85%; /* Sedikit lebih lebar di tablet */
+            }
+        }
+        
+        @media(max-width: 480px) {
+            header {
+                height: 80px;
+            }
+            nav {
+                top: 80px;
+            }
+            .blinking-container { 
+                top: 125px;
+                padding: 8px 0;
+            }
+            .blinking-text {
+                font-size: 13px;
+            }
+            .content {
+                padding-top: 180px;
+            }
+            nav a {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            .flow-image-container {
+                width: 95%; /* Hampir full width di mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="images/banner1.png" alt="Suara Netizen Header">
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="tentang.html">Tentang Suara Netizen</a>
+        <a href="poling.html">Polling</a>
+        <a href="hasil.html">Hasil Poling</a>
+        <a href="kata_terbit.html">Kata-kata Terbit</a>
+        <a href="tim.html">Tim</a>
+        <a href="galeri.html">Galery</a>
+        <a href="bilboard.html">Penerbitan Billboard</a>
+    </nav>
+    
+    <!-- Blinking Text -->
+    <div class="blinking-container">
+        <div class="blinking-text">
+            Selamat datang di suaranetizen.co.id! Dengan kekuatan kata-kata (The Power of Words) kita tentukan arah dan masa depan bangsa!
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="billboard-container">
+            <h2>Alur Penerbitan Billboard SuaraNetizen</h2>
+            
+            <!-- Container untuk gambar alur penerbitan billboard (diperkecil 30%) -->
+            <div class="flow-image-container">
+                <img src="images/alur.jpg" alt="Alur Penerbitan Billboard SuaraNetizen" class="flow-image">
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 SuaraNetizen. All rights reserved.
+    </footer>
+</body>
+</html>

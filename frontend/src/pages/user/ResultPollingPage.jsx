@@ -5,6 +5,7 @@ import ErrorModal from '../../components/ErrorModal';
 import SuccessModal from '../../components/SuccessModal';
 import formatCurrencyPrefix from '../../utils/formatCurrency';
 import { useNavigate } from 'react-router-dom';
+import Sponsor from '../../components/Sponsor';
 
 const ResultPollingPage = () => {
     const [dataPolling, setDataPolling] = useState([]);
@@ -13,7 +14,7 @@ const ResultPollingPage = () => {
     const [totalVotes, setTotalVotes] = useState(0);
 
     const navigate = useNavigate();
-    
+
     // Donation target states
     const [donationData, setDonationData] = useState({
         target: 1000000000, // 1 Milyar
@@ -27,7 +28,7 @@ const ResultPollingPage = () => {
         try {
             const res = await axios.get('/user/result-pollings');
             setDataPolling(res.data);
-            
+
             // Calculate total votes
             const total = res.data.reduce((sum, polling) => sum + (polling.polling_votes_count || 0), 0);
             setTotalVotes(total);
@@ -75,7 +76,7 @@ const ResultPollingPage = () => {
     const renderDonationTarget = () => {
         const percentage = getDonationPercentage();
         const remaining = donationData.target - donationData.collected;
-        
+
         return (
             <div className="donation-target-section bg-gradient-primary text-white p-4 rounded-3 mb-4">
                 <div className="row align-items-center">
@@ -85,8 +86,8 @@ const ResultPollingPage = () => {
                                 <i className="ph ph-heart-straight-fill me-2 text-warning"></i>
                                 Target Donasi untuk {donationData.description || 'Kegiatan'}
                             </h5>
-                            
-                            
+
+
                             {/* Progress Info */}
                             <div className="row text-center mb-3">
                                 <div className="col-6">
@@ -101,7 +102,7 @@ const ResultPollingPage = () => {
                                         <small className="opacity-75 text-dark">Donatur</small>
                                     </div>
                                 </div>
-                                
+
                             </div>
 
                             {/* Progress Bar */}
@@ -134,7 +135,7 @@ const ResultPollingPage = () => {
                             )}
                         </div>
                     </div>
-                    
+
                     {/* <div className="col-lg-4 text-center">
                         <div className="donation-action">
                             <div className="donation-illustration mb-3">
@@ -208,10 +209,10 @@ const ResultPollingPage = () => {
     const renderRankBadge = (index, votes) => {
         const style = getRankStyle(index);
         const percentage = getPercentage(votes);
-        
+
         return (
             <div className="rank-container position-relative">
-                <div 
+                <div
                     className="rank-badge d-flex flex-column align-items-center justify-content-center text-white position-relative"
                     style={{
                         width: '80px',
@@ -227,7 +228,7 @@ const ResultPollingPage = () => {
                     <i className={`ph ph-${style.icon} mb-1`} style={{ fontSize: '1.2rem' }}></i>
                     <span>{index + 1}</span>
                 </div>
-                
+
             </div>
         );
     };
@@ -236,7 +237,7 @@ const ResultPollingPage = () => {
     const renderProgressBar = (votes, index) => {
         const percentage = getPercentage(votes);
         const style = getRankStyle(index);
-        
+
         return (
             <div className="progress-container mt-3">
                 <div className="d-flex justify-content-between align-items-center mb-2">
@@ -267,7 +268,7 @@ const ResultPollingPage = () => {
     // Render categories
     const renderKategoris = (kategoris) => {
         if (!kategoris || kategoris.length === 0) return null;
-        
+
         return (
             <div className="mb-2">
                 {kategoris.map((kategori, index) => (
@@ -280,223 +281,313 @@ const ResultPollingPage = () => {
     };
 
     return (
-        <div className="rounded p-5" style={{ backgroundColor: '#3053a7' }}>
-            {error && (
-                <ErrorModal error={error} onClose={() => setError('')} />
-            )}
-            {success && (
-                <SuccessModal message={success} onClose={() => setSuccess('')} />
-            )}
+        <>
+            {/* Content Layout sesuai template hasil.html */}
+            <div className="content" style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                padding: '20px',
+                maxWidth: '1200px',
+                margin: '0 auto'
+            }}>
+                <Sponsor />
+                {error && (
+                    <ErrorModal error={error} onClose={() => setError('')} />
+                )}
+                {success && (
+                    <SuccessModal message={success} onClose={() => setSuccess('')} />
+                )}
 
-            <div className='row'>
-                <div className='col-md-4 col-sm-12 text-center' style={{ alignContent: 'center' }}>
-                    <span className='text-white'>Join At</span>
-                    <h4 className='text-white'>{WEB_NAME}</h4>
-                </div>
-                <div className='col-md-8 col-sm-12'>
-                    <div className='bg-white rounded m-5'>
-                        
-                        {/* Header Section */}
-                        <div className='headQuote p-4 border-bottom bg-light'>
-                            {dataPolling.length > 0 ? (
-                                <div className="text-center">
-                                    <div className="d-flex align-items-center justify-content-center mb-3">
-                                        <i className="ph ph-trophy text-warning me-2" style={{ fontSize: '2rem' }}></i>
-                                        <h3 className="mb-0 fw-bold text-primary">Hasil Polling Suara Netizen</h3>
-                                        <i className="ph ph-trophy text-warning ms-2" style={{ fontSize: '2rem' }}></i>
-                                    </div>
-                                    <p className="text-muted mb-0">
-                                        <i className="ph ph-users me-1"></i>
-                                        Total {formatCurrencyPrefix(totalVotes)} netizen telah berpartisipasi
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="text-center">
-                                    <h5 className="text-muted">
-                                        <i className="ph ph-chart-bar me-2"></i>
-                                        Hasil Polling
-                                    </h5>
-                                </div>
-                            )}
+                {/* Right Column - Main Content */}
+                <div className="right-column" style={{
+                    flex: 1,
+                    minWidth: '300px',
+                    padding: '20px',
+                    background: '#fff',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                }}>
+                    {/* Poll Title dengan animasi sesuai template */}
+                    <div className="poll-title" style={{
+                        textAlign: 'center',
+                        fontSize: '32px',
+                        color: '#0066cc',
+                        marginBottom: '30px',
+                        animation: 'pulse 2s infinite, float 3s ease-in-out infinite',
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
+                        fontWeight: 'bold'
+                    }}>
+                        Tiga Besar Pemenang Poling
+                    </div>
+
+                    {/* Donation Progress Section sesuai template */}
+                    <div className="donation-section" style={{
+                        marginBottom: '30px',
+                        padding: '20px',
+                        background: '#f5f9ff',
+                        borderRadius: '8px',
+                        border: '1px solid #ddd'
+                    }}>
+                        <h2 className="donation-title" style={{
+                            fontSize: '24px',
+                            color: '#0066cc',
+                            marginBottom: '15px',
+                            textAlign: 'left'
+                        }}>
+                            Capaian Donasi Penerbitan Billboard
+                        </h2>
+                        <div className="progress-container" style={{
+                            width: '100%',
+                            backgroundColor: '#e0e0e0',
+                            borderRadius: '20px',
+                            marginBottom: '10px',
+                            overflow: 'hidden'
+                        }}>
+                            <div
+                                className="progress-bar"
+                                style={{
+                                    height: '30px',
+                                    background: 'linear-gradient(90deg, #4CAF50, #8BC34A)',
+                                    borderRadius: '20px',
+                                    transition: 'width 0.5s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-end',
+                                    paddingRight: '10px',
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    width: `${getDonationPercentage()}%`
+                                }}
+                            >
+                                {getDonationPercentage()}%
+                            </div>
                         </div>
-
-                        {/* Donation Target Section */}
-                        <div className="p-4">
-                            {renderDonationTarget()}
+                        <div className="donation-info" style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            fontSize: '14px',
+                            color: '#555'
+                        }}>
+                            <span>Terkumpul: <span style={{ fontWeight: 'bold', color: '#0066cc' }}>Rp {formatCurrency(donationData.collected)}</span></span>
+                            <span>Target: <span style={{ fontWeight: 'bold', color: '#0066cc' }}>Rp {formatCurrency(donationData.target)}</span></span>
                         </div>
+                    </div>
 
-                        {/* Results Section */}
-                        <div className='dataQuote p-4'>
-                            {dataPolling.length === 0 ? (
-                                <div className="text-center py-5">
-                                    <i className="ph ph-chart-line-down text-muted mb-3" style={{ fontSize: '4rem' }}></i>
-                                    <h5 className="text-muted">Tidak ada hasil polling yang tersedia</h5>
-                                    <p className="text-muted">Belum ada data polling yang dapat ditampilkan saat ini.</p>
-                                </div>
-                            ) : (
-                                <div className="results-container">
-                                    {/* Top 3 Header */}
-                                    <div className="top3-header text-center mb-4">
-                                        <h4 className="fw-bold text-primary mb-2">
-                                            <i className="ph ph-ranking me-2"></i>
-                                            Top Quote Terpopuler
-                                        </h4>
-                                        <p className="text-muted mb-0">Inilah quote-quote terfavorit berdasarkan suara netizen</p>
+                    {/* Chart Container sesuai template */}
+                    {dataPolling.length > 0 && (
+                        <div className="chart-container" style={{
+                            width: '100%',
+                            height: 'auto',
+                            marginBottom: '40px',
+                            background: '#f9f9f9',
+                            borderRadius: '8px',
+                            padding: '20px',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                        }}>
+                            <h2 style={{ marginBottom: '20px', color: '#0066cc', fontSize: '18px', fontWeight: 'bold' }}>Perolehan Suara</h2>
+                            {dataPolling.slice(0, 3).map((polling, index) => (
+                                <div key={polling.id} className="chart-bar" style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    marginBottom: '15px'
+                                }}>
+                                    <div className="chart-label" style={{
+                                        width: '150px',
+                                        fontWeight: 'bold',
+                                        fontSize: '14px'
+                                    }}>
+                                        {getCreatorName(polling)}
                                     </div>
-
-                                    {dataPolling.map((polling, index) => (
-                                        <div
-                                            key={polling.id}
-                                            className="result-card mb-4 p-4 border rounded-3 position-relative overflow-hidden"
-                                            style={{
-                                                background: index < 3 ? 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' : '#fff',
-                                                border: index < 3 ? getRankStyle(index).border : '1px solid #dee2e6',
-                                                boxShadow: getRankStyle(index).shadow,
-                                                transform: 'translateY(0)',
-                                                transition: 'all 0.3s ease'
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(0)';
-                                                e.currentTarget.style.boxShadow = getRankStyle(index).shadow;
-                                            }}
-                                        >
-                                            {/* Ranking decoration for top 3 */}
-                                            {index < 3 && (
-                                                <div 
-                                                    className="position-absolute top-0 start-0 w-100 h-100 opacity-10"
-                                                    style={{
-                                                        background: getRankStyle(index).bgColor,
-                                                        zIndex: 0
-                                                    }}
-                                                ></div>
-                                            )}
-
-                                            <div className="d-flex align-items-start gap-4 position-relative" style={{ zIndex: 1 }}>
-                                                {/* Rank Badge */}
-                                                <div className="flex-shrink-0">
-                                                    {renderRankBadge(index, polling.polling_votes_count)}
-                                                </div>
-
-                                                {/* Content */}
-                                                <div className="flex-grow-1">
-                                                    {/* Quote Text */}
-                                                    <div className="mb-3">
-                                                        <h4 className="fw-bold text-dark mb-2" style={{ fontSize: '1.3rem', lineHeight: '1.4' }}>
-                                                            <i className="ph ph-quotes text-primary me-2"></i>
-                                                            "{polling?.kalimat}"
-                                                        </h4>
-                                                        
-                                                        {/* Categories */}
-                                                        {renderKategoris(polling.kategoris)}
-                                                    </div>
-
-                                                    {/* Creator Info */}
-                                                    <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-3">
-                                                        <div className="creator-info mb-2 mb-sm-0">
-                                                            <span className="text-muted">Quote dari </span>
-                                                            <strong className={polling.is_anonymous ? 'text-muted' : 'text-primary'}>
-                                                                {polling.is_anonymous && <i className="ph ph-mask me-1"></i>}
-                                                                {getCreatorName(polling)}
-                                                            </strong>
-                                                        </div>
-                                                        
-                                                        {/* Vote Count Badge */}
-                                                        <div className="vote-badge">
-                                                            <span className="badge bg-success" style={{ fontSize: '0.9rem', padding: '8px 12px' }}>
-                                                                <i className="ph ph-heart-straight-fill me-1"></i>
-                                                                {formatCurrencyPrefix(polling?.polling_votes_count)} Netizen
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Progress Bar */}
-                                                    {renderProgressBar(polling.polling_votes_count, index)}
-
-                                                    {/* Action Buttons */}
-                                                    <div className="mt-3 d-flex gap-2">
-                                                        <button className="btn btn-outline-primary btn-sm">
-                                                            <i className="ph ph-share-network me-1"></i>
-                                                            Bagikan
-                                                        </button>
-                                                        <button className="btn btn-outline-success btn-sm">
-                                                            <i className="ph ph-heart me-1"></i>
-                                                            Dukung Quote Ini
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                    {/* Summary Stats */}
-                                    {dataPolling.length > 0 && (
-                                        <div className="summary-stats mt-5 p-4 bg-light rounded-3">
-                                            <h6 className="fw-bold mb-3 text-center">
-                                                <i className="ph ph-chart-pie me-2 text-primary"></i>
-                                                Ringkasan Polling
-                                            </h6>
-                                            <div className="row text-center">
-                                                <div className="col-md-3">
-                                                    <div className="stat-item">
-                                                        <h4 className="text-primary fw-bold">{dataPolling.length}</h4>
-                                                        <small className="text-muted">Total Quote</small>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-3">
-                                                    <div className="stat-item">
-                                                        <h4 className="text-success fw-bold">{formatCurrencyPrefix(totalVotes)}</h4>
-                                                        <small className="text-muted">Total Suara</small>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-3">
-                                                    <div className="stat-item">
-                                                        <h4 className="text-warning fw-bold">
-                                                            {totalVotes > 0 ? Math.round(totalVotes / dataPolling.length) : 0}
-                                                        </h4>
-                                                        <small className="text-muted">Rata-rata</small>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-3">
-                                                    <div className="stat-item">
-                                                        <h4 className="text-info fw-bold">{donationData.donors}</h4>
-                                                        <small className="text-muted">Donatur</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Call to Action */}
-                                    <div className="cta-section mt-5 p-4 bg-primary bg-opacity-10 rounded-3 text-center">
-                                        <h5 className="fw-bold text-primary mb-2">
-                                            <i className="ph ph-megaphone me-2"></i>
-                                            Suaramu Penting!
-                                        </h5>
-                                        <p className="text-muted mb-3">
-                                            Bergabunglah dengan ribuan netizen lainnya dalam menyuarakan pendapat dan membangun Indonesia yang lebih baik.
-                                        </p>
-                                        <div className="d-flex gap-2 justify-content-center flex-wrap">
-                                            <button className="btn btn-primary" onClick={() => navigate('/')}>
-                                                <i className="ph ph-plus me-1"></i>
-                                                Kirim Quote Baru
-                                            </button>
-                                            <button className="btn btn-outline-primary border border-primary text-primary" onClick={() => navigate('/pollings')}>
-                                                <i className="ph ph-chart-line me-1 text-primary"></i>
-                                                <span className='text-primary'>Lihat Semua Polling</span> 
-                                            </button>
+                                    <div className="chart-bar-inner" style={{
+                                        flexGrow: 1,
+                                        height: '30px',
+                                        background: '#e0e0e0',
+                                        borderRadius: '15px',
+                                        overflow: 'hidden',
+                                        position: 'relative'
+                                    }}>
+                                        <div className="chart-bar-fill" style={{
+                                            height: '100%',
+                                            background: 'linear-gradient(90deg, #0066cc, #4da6ff)',
+                                            borderRadius: '15px',
+                                            transition: 'width 1s ease-out',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'flex-end',
+                                            paddingRight: '10px',
+                                            color: 'white',
+                                            fontWeight: 'bold',
+                                            width: `${Math.max(getPercentage(polling.polling_votes_count), 5)}%`
+                                        }}>
+                                            {formatCurrencyPrefix(polling.polling_votes_count)} suara
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            ))}
                         </div>
+                    )}
+
+                    {/* Poll Table sesuai template */}
+                    {dataPolling.length > 0 && (
+                        <table className="poll-table" style={{
+                            width: '100%',
+                            borderCollapse: 'collapse',
+                            marginTop: '30px'
+                        }}>
+                            <thead>
+                                <tr>
+                                    <th style={{
+                                        backgroundColor: '#0066cc',
+                                        color: 'white',
+                                        padding: '12px',
+                                        textAlign: 'left'
+                                    }}>No</th>
+                                    <th style={{
+                                        backgroundColor: '#0066cc',
+                                        color: 'white',
+                                        padding: '12px',
+                                        textAlign: 'left'
+                                    }}>Kata-kata/Quote</th>
+                                    <th style={{
+                                        backgroundColor: '#0066cc',
+                                        color: 'white',
+                                        padding: '12px',
+                                        textAlign: 'left'
+                                    }}>Nama User</th>
+                                    <th style={{
+                                        backgroundColor: '#0066cc',
+                                        color: 'white',
+                                        padding: '12px',
+                                        textAlign: 'left'
+                                    }}>Suara</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {dataPolling.map((polling, index) => (
+                                    <tr key={polling.id}
+                                        style={{
+                                            backgroundColor: index % 2 === 1 ? '#f5f9ff' : 'white'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = '#e6f0ff';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = index % 2 === 1 ? '#f5f9ff' : 'white';
+                                        }}
+                                    >
+                                        <td style={{
+                                            padding: '10px 12px',
+                                            borderBottom: '1px solid #ddd'
+                                        }}>{index + 1}</td>
+                                        <td style={{
+                                            padding: '10px 12px',
+                                            borderBottom: '1px solid #ddd'
+                                        }}>"{polling?.kalimat}"</td>
+                                        <td style={{
+                                            padding: '10px 12px',
+                                            borderBottom: '1px solid #ddd'
+                                        }}>{getCreatorName(polling)}</td>
+                                        <td style={{
+                                            padding: '10px 12px',
+                                            borderBottom: '1px solid #ddd',
+                                            fontWeight: 'bold'
+                                        }}>{formatCurrencyPrefix(polling?.polling_votes_count)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+
+                    {/* Thank You Message sesuai template */}
+                    <div className="thank-you" style={{
+                        textAlign: 'center',
+                        fontSize: '20px',
+                        color: '#0066cc',
+                        marginTop: '40px',
+                        padding: '20px',
+                        background: '#f5f9ff',
+                        borderRadius: '8px',
+                        fontWeight: 'bold'
+                    }}>
+                        Terima kasih kepada semua Netizen yang telah berpartisipasi dan Selamat kepada tiga orang Netizen dengan perolehan suara terbanyak
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* CSS untuk animasi pulse dan float */}
+            <style jsx>{`
+                .sponsor-img {
+                    width: 100%;
+                    height: auto;
+                    margin-bottom: 20px;
+                    border-radius: 4px;
+                    border: 1px solid #ddd;
+                }
+                
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+                
+                @keyframes float {
+                    0% { transform: translateY(0px); }
+                    50% { transform: translateY(-5px); }
+                    100% { transform: translateY(0px); }
+                }
+
+                @media(max-width: 768px) {
+                    .content {
+                        flex-direction: column !important;
+                        padding-top: 10px !important;
+                    }
+                    
+                    .left-column {
+                        width: 100% !important;
+                        margin-right: 0 !important;
+                        margin-bottom: 20px !important;
+                    }
+                    
+                    .poll-title {
+                        font-size: 26px !important;
+                    }
+                    
+                    .chart-label {
+                        width: 100px !important;
+                        font-size: 14px !important;
+                    }
+                    
+                    .donation-title {
+                        font-size: 22px !important;
+                    }
+                }
+                
+                @media(max-width: 480px) {
+                    .poll-title {
+                        font-size: 22px !important;
+                    }
+                    
+                    .thank-you {
+                        font-size: 16px !important;
+                    }
+                    
+                    .donation-title {
+                        font-size: 20px !important;
+                    }
+                    
+                    .progress-bar {
+                        height: 25px !important;
+                        font-size: 14px !important;
+                    }
+                    
+                    .chart-label {
+                        width: 80px !important;
+                        font-size: 12px !important;
+                    }
+                }
+            `}</style>
+        </>
     );
 };
 

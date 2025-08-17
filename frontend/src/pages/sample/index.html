@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suara Netizen</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #fff; }
+        header { text-align: center; padding: 0; position: fixed; top: 0; left: 0; width: 100%; height: 120px; background: #fff; z-index: 1000; overflow: hidden; }
+        header img { width: 100%; height: 100%; object-fit: cover; }
+        nav { display: flex; justify-content: center; background: #fff; flex-wrap: wrap; position: fixed; top: 120px; left: 0; width: 100%; z-index: 1001; overflow-x: auto; white-space: nowrap; padding: 5px 0; }
+        nav a { padding: 10px 15px; text-decoration: none; color: black; font-weight: bold; border-left: 1px solid #ccc; }
+        nav a:first-child { border-left: none; }
+        nav a:hover { color: #0066cc; }
+        
+        /* Gaya untuk teks berkedip */
+        .blinking-container {
+            position: fixed;
+            top: 165px;
+            left: 0;
+            width: 100%;
+            background-color: #0066cc;
+            color: white;
+            padding: 12px 0;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .blinking-text {
+            font-size: 14px;
+            font-weight: bold;
+            animation: blink 1.5s linear infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .content { display: flex; flex-wrap: wrap; justify-content: center; padding: 220px 20px 20px 20px; }
+        .login-box, .user-box { width: 300px; border: 1px solid #ccc; padding: 20px; margin: 10px; background: #f5f9ff; text-align: center; position: relative; }
+        .login-box input[type="email"], .login-box input[type="password"], .login-box input[type="text"] { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
+        .login-box button { width: 100%; padding: 12px; background: #0066ff; color: #fff; border: none; margin-top: 10px; cursor: pointer; border-radius: 6px; font-weight: bold; transition: all 0.3s ease; }
+        .login-box button:hover { background: #0052a3; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .login-box button:active { transform: translateY(0); }
+        .login-box a { font-size: 16px; text-decoration: none; color: #0066ff; font-weight: bold; cursor: pointer; }
+        .register-form, .forgot-password-form { display: none; margin-top: 10px; }
+        .register-form input, .forgot-password-form input { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
+        .register-form input.error, .forgot-password-form input.error { border: 2px solid red; }
+        .register-form button, .forgot-password-form button { width: 100%; padding: 10px; background: #28a745; color: #fff; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; }
+        .error-message { color: red; font-size: 14px; display: none; margin-bottom: 5px; }
+        .logout-btn { width: 100%; padding: 10px; margin-top: 15px; background: #ff4d4d; color: #fff; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; }
+        .form-box { flex: 1; min-width: 300px; max-width: 500px; margin: 10px; border: 1px solid #ccc; padding: 20px; }
+        .form-box img.billboard { width: 100%; height: auto; margin-bottom: 15px; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .checkbox-group label { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .form-box textarea { 
+            width: 100%; 
+            margin: 5px 0; 
+            padding: 8px; 
+            resize: vertical; /* Hanya memperbolehkan resize vertikal */
+            min-height: 50px; /* Tinggi minimum */
+            max-height: 150px; /* Tinggi maksimum */
+            overflow-y: auto; /* Tambahkan scroll jika konten melebihi tinggi */
+        }
+        .form-box input[type="text"] { width: 100%; margin: 5px 0; padding: 8px; }
+        .form-box .button-container { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; }
+        .submit-btn { 
+            width: 100%; 
+            padding: 12px; 
+            background: #0066cc; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .submit-btn:hover {
+            background: #0052a3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        .submit-btn:disabled {
+            background: #cccccc !important;
+            color: #666666 !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .poll-btn { 
+            width: 100%; 
+            padding: 12px; 
+            background: #f8f9fa; 
+            color: #0066cc; 
+            border: 2px solid #0066cc; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            text-align: center; 
+            text-decoration: none; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: block;
+        }
+        .poll-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .poll-btn:active {
+            transform: translateY(0);
+        }
+        footer { text-align: center; padding: 10px; background: #f5f5f5; margin-top: 20px; }
+        .char-counter { text-align: right; font-size: 12px; color: #666; margin-top: -10px; margin-bottom: 10px; }
+
+        /* Popup Pembayaran */
+        .payment-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        .payment-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .payment-container h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        .payment-container img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin: 15px auto;
+            border: 1px solid #ddd;
+            display: block;
+        }
+        .payment-container p.nmid {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            margin: 10px auto;
+            max-width: 300px;
+        }
+        .payment-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        .payment-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        #confirmPaymentBtn {
+            background: #28a745;
+            color: white;
+        }
+        #confirmPaymentBtn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        #confirmPaymentBtn:active {
+            transform: translateY(0);
+        }
+        #confirmPaymentBtn:disabled {
+            background: #cccccc !important;
+            color: #666666 !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        #cancelPaymentBtn {
+            background: #ff4d4d;
+            color: white;
+        }
+        #cancelPaymentBtn:hover {
+            background: #e04343;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        #cancelPaymentBtn:active {
+            transform: translateY(0);
+        }
+
+        /* Tambahan untuk Facebook Login */
+        .fb-login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .fb-login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .close-fb-login {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        #fb-login-button {
+            margin: 15px auto;
+            display: inline-block;
+        }
+        @media(max-width: 768px) { 
+            nav { top: 100px; } 
+            .blinking-container { top: 145px; }
+            .content { padding-top: 200px; flex-direction: column; align-items: center; } 
+        }
+        @media(max-width: 480px) {
+            .form-box .button-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .submit-btn, .poll-btn {
+                width: 100%;
+                margin: 0;
+            }
+            header {
+                height: 80px;
+            }
+            nav {
+                top: 80px;
+            }
+            .blinking-container { 
+                top: 125px;
+                padding: 8px 0;
+            }
+            .blinking-text {
+                font-size: 13px;
+            }
+            .content {
+                padding-top: 180px;
+            }
+            nav a {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            .payment-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="images/banner1.png" alt="Suara Netizen Header">
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="tentang.html">Tentang Suara Netizen</a>
+        <a href="poling.html">Polling</a>
+        <a href="hasil.html">Hasil Poling</a>
+        <a href="kata_terbit.html">Kata-kata Terbit</a>
+        <a href="tim.html">Tim</a>
+        <a href="galeri.html">Galery</a>
+        <a href="bilboard.html">Penerbitan Billboard</a>
+    </nav>
+    
+    <!-- Blinking Text -->
+    <div class="blinking-container">
+        <div class="blinking-text">
+            Selamat datang di suaranetizen.co.id! Dengan kekuatan kata-kata (The Power of Words) kita tentukan arah dan masa depan bangsa!
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Overlay untuk Facebook Login -->
+        <div class="fb-login-overlay" id="fbLoginOverlay">
+            <div class="fb-login-container">
+                <span class="close-fb-login" id="closeFbLogin">&times;</span>
+                <p>Login dengan Facebook</p>
+                <div id="fb-login-button"></div>
+            </div>
+        </div>
+
+        <div class="login-box" id="loginBox">
+            <!-- Info user Facebook -->
+            <div id="fbUserInfo" style="display:none; margin-bottom:15px;">
+                <p>Hai, <span id="fbUserName"></span>!</p>
+            </div>
+            
+            <div class="error-message" id="loginError">Email dan password salah</div>
+            <h3>Login</h3>
+            <input id="loginEmail" type="email" placeholder="Email" required>
+            <input id="loginPassword" type="password" placeholder="Password" required>
+            <button id="loginBtn">Login</button>
+            <p style="text-align:center;"><a id="showRegister">Registrasi Baru!</a></p>
+            <p style="text-align:center; margin-top:10px;"><a id="forgotPassword" style="font-size:14px;">Lupa Password?</a></p>
+            
+            <div class="register-form" id="registerForm">
+                <input id="regName" type="text" placeholder="Nama Lengkap" required>
+                <input id="regEmail" type="email" placeholder="Email" required>
+                <input id="regPassword" type="password" placeholder="Password" required>
+                <button id="registerBtn">Daftar</button>
+            </div>
+            
+            <div class="forgot-password-form" id="forgotPasswordForm">
+                <input id="resetEmail" type="email" placeholder="Masukkan email Anda" required>
+                <button id="resetPasswordBtn">Kirim Link Reset</button>
+            </div>
+            
+            <button id="fbLoginBtn" style="background:#3b5998; margin-top:10px;">Login with Facebook</button>
+            <button id="googleLoginBtn" style="background:#db4437; margin-top:10px;">Login with Google</button>
+        </div>
+
+        <div class="user-box" id="userBox" style="display:none;">
+            <h3 id="welcomeMessage"></h3>
+            <button class="logout-btn" id="logoutBtn">Logout / Keluar</button>
+        </div>
+
+        <div class="form-box">
+            <h3>Buat Kata-kata Anda hari ini atau Quote untuk kami terbitkan!</h3>
+            <p>Pilih Kategori:</p>
+            <div class="checkbox-group">
+                <label><input type="radio" name="kategori" class="kategori"> Politik</label>
+                <label><input type="radio" name="kategori" class="kategori"> Edukasi</label>
+                <label><input type="radio" name="kategori" class="kategori"> Berita viral</label>
+                <label><input type="radio" name="kategori" class="kategori"> Umum</label>
+            </div>
+            <textarea id="quote" maxlength="30" placeholder="Tulis Kata-kata Anda di sini (maksimal 30 karakter)..."></textarea>
+            <div class="char-counter"><span id="charCount">0</span>/30 karakter</div>
+            <input type="text" id="userName" placeholder="Nama Anda">
+            <div class="button-container">
+                <button class="submit-btn" id="kirim" disabled>Kirim Kata-kata & Donasi</button>
+                <a href="poling.html" class="poll-btn">Ikut Polling Tanpa Donasi</a>
+            </div>
+        </div>
+        
+        <!-- Popup Pembayaran QRIS -->
+        <div class="payment-popup" id="paymentPopup">
+            <div class="payment-container">
+                <h3>Pembayaran Donasi</h3>
+                <p>Scan QRIS berikut untuk melakukan pembayaran:</p>
+                <img src="QRIS.jpeg" alt="QRIS GoPay">
+                <p class="nmid">SUARANETIZEN.CO.ID<br>NMID: ID1025419946161</p>
+                <div class="payment-buttons">
+                    <button id="confirmPaymentBtn" disabled>Kirim</button>
+                    <button id="cancelPaymentBtn">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 SuaraNetizen. All rights reserved.
+    </footer>
+
+    <script>
+        // Fungsi validasi
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        function validateName(name) {
+            return name.trim().length >= 3;
+        }
+
+        // Fungsi hash sederhana untuk password
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = (hash << 5) - hash + char;
+                hash |= 0; // Convert to 32bit integer
+            }
+            return hash.toString();
+        }
+
+        // Simpan user ke localStorage
+        function saveUserToDatabase(user) {
+            let users = JSON.parse(localStorage.getItem('database_user') || '[]');
+            // Hash password sebelum disimpan
+            users.push({
+                name: user.name,
+                email: user.email,
+                password: simpleHash(user.password)
+            });
+            localStorage.setItem('database_user', JSON.stringify(users));
+        }
+
+        function getUsersFromDatabase() {
+            return JSON.parse(localStorage.getItem('database_user') || '[]');
+        }
+
+        // DOM Elements
+        const kirimBtn = document.getElementById('kirim');
+        const quoteInput = document.getElementById('quote');
+        const kategoriRadios = document.querySelectorAll('input[name="kategori"]');
+        const showRegister = document.getElementById('showRegister');
+        const registerForm = document.getElementById('registerForm');
+        const registerBtn = document.getElementById('registerBtn');
+        const regEmail = document.getElementById('regEmail');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginError = document.getElementById('loginError');
+        const loginBox = document.getElementById('loginBox');
+        const userBox = document.getElementById('userBox');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const forgotPassword = document.getElementById('forgotPassword');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+        const resetEmail = document.getElementById('resetEmail');
+        const fbLoginBtn = document.getElementById('fbLoginBtn');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const paymentPopup = document.getElementById('paymentPopup');
+        const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+        const cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
+
+        // Event Listeners
+        showRegister.addEventListener('click', () => {
+            registerForm.style.display = registerForm.style.display === 'block' ? 'none' : 'block';
+            forgotPasswordForm.style.display = 'none';
+        });
+
+        forgotPassword.addEventListener('click', () => {
+            forgotPasswordForm.style.display = forgotPasswordForm.style.display === 'block' ? 'none' : 'block';
+            registerForm.style.display = 'none';
+        });
+
+        registerBtn.addEventListener('click', () => {
+            const name = document.getElementById('regName').value;
+            const email = regEmail.value;
+            const password = document.getElementById('regPassword').value;
+            
+            // Validasi
+            if (!validateName(name)) {
+                alert('Nama harus minimal 3 karakter');
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                regEmail.classList.add('error');
+                alert('Email tidak valid!');
+                return;
+            } else {
+                regEmail.classList.remove('error');
+            }
+            
+            if (!validatePassword(password)) {
+                alert('Password harus minimal 6 karakter');
+                return;
+            }
+            
+            // Cek apakah email sudah terdaftar
+            const users = getUsersFromDatabase();
+            if (users.some(u => u.email === email)) {
+                alert('Email sudah terdaftar!');
+                return;
+            }
+            
+            const newUser = {
+                name: name,
+                email: email,
+                password: password
+            };
+            
+            saveUserToDatabase(newUser);
+            alert('Registrasi berhasil! Silakan login.');
+            registerForm.style.display = 'none';
+            // Reset form
+            document.getElementById('regName').value = '';
+            regEmail.value = '';
+            document.getElementById('regPassword').value = '';
+        });
+
+        loginBtn.addEventListener('click', () => {
+            const email = loginEmail.value;
+            const password = loginPassword.value;
+            
+            if (!validateEmail(email)) {
+                alert('Email tidak valid!');
+                return;
+            }
+            
+            const users = getUsersFromDatabase();
+            const user = users.find(u => 
+                u.email === email && 
+                u.password === simpleHash(password)
+            );
+            
+            if (user) {
+                loginError.style.display = 'none';
+                welcomeMessage.textContent = 'Selamat datang, ' + user.name + '!';
+                loginBox.style.display = 'none';
+                userBox.style.display = 'block';
+                // Set nama user di form
+                document.getElementById('userName').value = user.name;
+            } else {
+                loginError.style.display = 'block';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            userBox.style.display = 'none';
+            loginBox.style.display = 'block';
+            loginEmail.value = '';
+            loginPassword.value = '';
+        });
+
+        resetPasswordBtn.addEventListener('click', () => {
+            const email = resetEmail.value;
+            const users = getUsersFromDatabase();
+            
+            if (!validateEmail(email)) {
+                alert('Email tidak valid!');
+                return;
+            }
+            
+            if (!users.some(u => u.email === email)) {
+                alert('Email tidak terdaftar!');
+                return;
+            }
+            
+            alert('Link reset password telah dikirim ke email Anda (simulasi)');
+            forgotPasswordForm.style.display = 'none';
+            resetEmail.value = '';
+        });
+
+        function updateButtonState() {
+            const quoteFilled = quoteInput.value.trim().length > 0;
+            const kategoriSelected = Array.from(kategoriRadios).some(rb => rb.checked);
+            kirimBtn.disabled = !(quoteFilled && kategoriSelected);
+        }
+
+        quoteInput.addEventListener('focus', () => {
+            quoteInput.placeholder = '';
+        });
+
+        quoteInput.addEventListener('blur', () => {
+            if (quoteInput.value.trim() === '') {
+                quoteInput.placeholder = 'Tulis Kata-kata Anda di sini (maksimal 30 karakter)...';
+            }
+        });
+
+        quoteInput.addEventListener('input', function() {
+            const charCount = this.value.length;
+            document.getElementById('charCount').textContent = charCount;
+            updateButtonState();
+            
+            // Beri warna merah jika mendekati limit
+            document.getElementById('charCount').style.color = 
+                charCount > 25 ? 'red' : '#666';
+        });
+
+        kategoriRadios.forEach(rb => rb.addEventListener('change', updateButtonState));
+
+        // ========== FITUR PEMBAYARAN ==========
+        kirimBtn.addEventListener('click', function() {
+            const quote = quoteInput.value.trim();
+            const kategori = document.querySelector('input[name="kategori"]:checked');
+            const name = document.getElementById('userName').value.trim();
+            
+            if (!quote || !kategori || !name) {
+                alert('Harap lengkapi semua field!');
+                return;
+            }
+            
+            // Tampilkan popup pembayaran
+            paymentPopup.style.display = 'flex';
+            confirmPaymentBtn.disabled = true;
+            
+            // Simulasi pengecekan pembayaran (setiap 3 detik)
+            const paymentCheckInterval = setInterval(() => {
+                // Dalam implementasi nyata, gunakan API GoPay untuk mengecek status pembayaran
+                // Ini hanya simulasi - anggap pembayaran berhasil setelah 5 detik
+                setTimeout(() => {
+                    clearInterval(paymentCheckInterval);
+                    confirmPaymentBtn.disabled = false;
+                    alert('Pembayaran berhasil diverifikasi! Silakan klik Kirim.');
+                }, 5000);
+            }, 3000);
+            
+            // Jika popup ditutup, hentikan pengecekan
+            cancelPaymentBtn.addEventListener('click', function onCancel() {
+                clearInterval(paymentCheckInterval);
+                paymentPopup.style.display = 'none';
+                cancelPaymentBtn.removeEventListener('click', onCancel);
+            });
+        });
+
+        confirmPaymentBtn.addEventListener('click', function() {
+            const quote = quoteInput.value.trim();
+            const kategori = document.querySelector('input[name="kategori"]:checked');
+            const name = document.getElementById('userName').value.trim();
+            
+            // Simpan data ke localStorage (dalam implementasi nyata, kirim ke server)
+            const submission = {
+                name: name,
+                quote: quote,
+                category: kategori.nextElementSibling.textContent,
+                timestamp: new Date().toISOString(),
+                paymentStatus: 'completed'
+            };
+            
+            let submissions = JSON.parse(localStorage.getItem('quoteSubmissions') || '[]');
+            submissions.push(submission);
+            localStorage.setItem('quoteSubmissions', JSON.stringify(submissions));
+            
+            // Reset form dan tutup popup
+            paymentPopup.style.display = 'none';
+            quoteInput.value = '';
+            document.getElementById('userName').value = '';
+            kategoriRadios.forEach(rb => rb.checked = false);
+            kirimBtn.disabled = true;
+            document.getElementById('charCount').textContent = '0';
+            document.getElementById('charCount').style.color = '#666';
+            
+            alert('Terima kasih! Kata-kata dan donasi Anda berhasil dikirim.');
+        });
+
+        cancelPaymentBtn.addEventListener('click', function() {
+            paymentPopup.style.display = 'none';
+        });
+
+        // ========== FACEBOOK LOGIN ==========
+        // Inisialisasi SDK Facebook
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId: 'YOUR_APP_ID', // Ganti dengan App ID Anda
+                cookie: true,
+                xfbml: true,
+                version: 'v18.0'
+            });
+            
+            // Cek status login saat load
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    handleFacebookLogin(response);
+                }
+            });
+        };
+
+        // Load SDK Facebook
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        // Handle tombol Facebook
+        fbLoginBtn.addEventListener('click', function() {
+            document.getElementById('fbLoginOverlay').style.display = 'flex';
+            
+            // Render button Facebook
+            if (typeof FB !== 'undefined') {
+                FB.XFBML.parse(document.getElementById('fb-login-button'));
+            }
+        });
+
+        // Tutup overlay
+        document.getElementById('closeFbLogin').addEventListener('click', function() {
+            document.getElementById('fbLoginOverlay').style.display = 'none';
+        });
+
+        // Fungsi handle login Facebook
+        function checkLoginState() {
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    handleFacebookLogin(response);
+                }
+            });
+        }
+
+        function handleFacebookLogin(response) {
+            FB.api('/me', {fields: 'name,email'}, function(user) {
+                // Tampilkan nama user
+                document.getElementById('fbUserName').textContent = user.name;
+                document.getElementById('fbUserInfo').style.display = 'block';
+                document.getElementById('fbLoginOverlay').style.display = 'none';
+                
+                // Set nama user di form
+                document.getElementById('userName').value = user.name;
+                
+                // Simpan data user
+                localStorage.setItem('fb_user', JSON.stringify(user));
+                
+                // Auto login (simulasi)
+                welcomeMessage.textContent = 'Selamat datang, ' + user.name + '!';
+                loginBox.style.display = 'none';
+                userBox.style.display = 'block';
+            });
+        }
+
+        // Render Facebook Login Button
+        document.getElementById('fb-login-button').innerHTML = 
+            '<div class="fb-login-button" ' +
+            'data-width="" ' +
+            'data-size="large" ' +
+            'data-button-type="login_with" ' +
+            'data-layout="default" ' +
+            'data-auto-logout-link="false" ' +
+            'data-use-continue-as="true" ' +
+            'data-scope="public_profile,email" ' +
+            'onlogin="checkLoginState();"></div>';
+
+        // Cek apakah sudah login Facebook saat load halaman
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('fb_user')) {
+                const user = JSON.parse(localStorage.getItem('fb_user'));
+                document.getElementById('fbUserName').textContent = user.name;
+                document.getElementById('fbUserInfo').style.display = 'block';
+                document.getElementById('userName').value = user.name;
+            }
+        });
+
+        // Google Login (simulasi)
+        document.getElementById('googleLoginBtn').addEventListener('click', function() {
+            const name = "Pengguna Google";
+            welcomeMessage.textContent = 'Selamat datang, ' + name + '!';
+            loginBox.style.display = 'none';
+            userBox.style.display = 'block';
+            document.getElementById('userName').value = name;
+            alert('Login dengan Google berhasil (simulasi)');
+        });
+    </script>
+</body>
+</html>

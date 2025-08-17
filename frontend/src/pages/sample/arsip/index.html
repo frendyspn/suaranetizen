@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suara Netizen</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #fff; }
+        header { text-align: center; padding: 0; position: fixed; top: 0; left: 0; width: 100%; height: 120px; background: #fff; z-index: 1000; overflow: hidden; }
+        header img { width: 100%; height: 100%; object-fit: cover; }
+        nav { display: flex; justify-content: center; background: #fff; flex-wrap: wrap; position: fixed; top: 120px; left: 0; width: 100%; z-index: 1001; overflow-x: auto; white-space: nowrap; padding: 5px 0; }
+        nav a { padding: 10px 15px; text-decoration: none; color: black; font-weight: bold; border-left: 1px solid #ccc; }
+        nav a:first-child { border-left: none; }
+        nav a:hover { color: #0066cc; }
+        .content { display: flex; flex-wrap: wrap; justify-content: center; padding: 200px 20px 20px 20px; }
+        .login-box, .user-box { width: 300px; border: 1px solid #ccc; padding: 20px; margin: 10px; background: #f5f9ff; text-align: center; position: relative; }
+        .login-box input[type="email"], .login-box input[type="password"] { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
+        .login-box button { width: 100%; padding: 10px; background: #0066ff; color: #fff; border: none; margin-top: 10px; }
+        .login-box a { font-size: 16px; text-decoration: none; color: #0066ff; font-weight: bold; cursor: pointer; }
+        .register-form { display: none; margin-top: 10px; }
+        .register-form input { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
+        .register-form input.error { border: 2px solid red; }
+        .register-form button { width: 100%; padding: 10px; background: #28a745; color: #fff; border: none; }
+        .error-message { color: red; font-size: 14px; display: none; margin-bottom: 5px; }
+        .logout-btn { width: 100%; padding: 10px; margin-top: 15px; background: #ff4d4d; color: #fff; border: none; cursor: pointer; }
+        .form-box { flex: 1; min-width: 300px; max-width: 500px; margin: 10px; border: 1px solid #ccc; padding: 20px; }
+        .form-box img.billboard { width: 100%; height: auto; margin-bottom: 15px; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .checkbox-group label { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .form-box textarea, .form-box input[type="text"] { width: 100%; margin: 5px 0; padding: 8px; }
+        .form-box button { width: 48%; padding: 10px; margin: 5px 1%; border: none; color: white; }
+        .submit-btn { background: gray; }
+        .poll-btn { background: #0066cc; }
+        footer { text-align: center; padding: 10px; background: #f5f5f5; margin-top: 20px; }
+
+        /* Tambahan untuk Facebook Login */
+        .fb-login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .fb-login-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .close-fb-login {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        #fb-login-button {
+            margin: 0 auto;
+            display: inline-block;
+        }
+        @media(max-width: 768px) { 
+            nav { top: 100px; } 
+            .content { padding-top: 180px; flex-direction: column; align-items: center; } 
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="../images/banner1.png" alt="Suara Netizen Header">
+    </header>
+
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Tentang Suara Netizen</a>
+        <a href="#">Polling</a>
+        <a href="#">Hasil Poling</a>
+        <a href="#">Kata-kata Terbit</a>
+        <a href="#">Tim</a>
+        <a href="#">Galery</a>
+        <a href="#">Penerbitan Billboard</a>
+    </nav>
+
+    <div class="content">
+        <!-- Overlay untuk Facebook Login -->
+        <div class="fb-login-overlay" id="fbLoginOverlay">
+            <div class="fb-login-container">
+                <span class="close-fb-login" id="closeFbLogin">&times;</span>
+                <p>Login dengan Facebook</p>
+                <div id="fb-login-button"></div>
+            </div>
+        </div>
+
+        <div class="login-box" id="loginBox">
+            <!-- Info user Facebook -->
+            <div id="fbUserInfo" style="display:none; margin-bottom:15px;">
+                <p>Hai, <span id="fbUserName"></span>!</p>
+            </div>
+            
+            <div class="error-message" id="loginError">email dan password salah</div>
+            <h3>Login</h3>
+            <input id="loginEmail" type="email" placeholder="Email">
+            <input id="loginPassword" type="password" placeholder="Password">
+            <button id="loginBtn">Login</button>
+            <p style="text-align:center;"><a id="showRegister">Registrasi Baru!</a></p>
+            <div class="register-form" id="registerForm">
+                <input id="regName" type="text" placeholder="Nama Lengkap">
+                <input id="regEmail" type="email" placeholder="Email">
+                <input id="regPassword" type="password" placeholder="Password">
+                <button id="registerBtn">Daftar</button>
+            </div>
+            <button id="fbLoginBtn" style="background:#3b5998; margin-top:10px;">Login with Facebook</button>
+            <button style="background:#db4437; margin-top:10px;">Login with Google</button>
+        </div>
+
+        <div class="user-box" id="userBox" style="display:none;">
+            <h3 id="welcomeMessage"></h3>
+            <button class="logout-btn" id="logoutBtn">Logout / Keluar</button>
+        </div>
+
+        <div class="form-box">
+            <img class="billboard" src="../gallery/billboard ilustrasi.jpg" alt="Billboard Ilustrasi">
+            <p>Pilih Kategori</p>
+            <div class="checkbox-group">
+                <label><input type="radio" name="kategori" class="kategori"> Politik</label>
+                <label><input type="radio" name="kategori" class="kategori"> Edukasi</label>
+                <label><input type="radio" name="kategori" class="kategori"> Berita viral</label>
+                <label><input type="radio" name="kategori" class="kategori"> Umum</label>
+            </div>
+            <textarea id="quote" maxlength="30" placeholder="Tulis Kata-kata Anda di sini (maksimal 30 karakter)..."></textarea>
+            <input type="text" placeholder="Nama Anda">
+            <div style="display:flex; justify-content:space-between;">
+                <button class="submit-btn" id="kirim" disabled>Kirim Kata-kata & Donasi</button>
+                <button class="poll-btn">Ikut Polling Tanpa Donasi</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 SuaraNetizen. All rights reserved.
+    </footer>
+
+    <script>
+        // Fungsi-fungsi sebelumnya
+        const kirimBtn = document.getElementById('kirim');
+        const quoteInput = document.getElementById('quote');
+        const kategoriRadios = document.querySelectorAll('input[name="kategori"]');
+        const showRegister = document.getElementById('showRegister');
+        const registerForm = document.getElementById('registerForm');
+        const registerBtn = document.getElementById('registerBtn');
+        const regEmail = document.getElementById('regEmail');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginError = document.getElementById('loginError');
+        const loginBox = document.getElementById('loginBox');
+        const userBox = document.getElementById('userBox');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Simpan user ke localStorage
+        function saveUserToDatabase(user) {
+            let users = JSON.parse(localStorage.getItem('database_user') || '[]');
+            users.push(user);
+            localStorage.setItem('database_user', JSON.stringify(users));
+        }
+
+        function getUsersFromDatabase()
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePassword(password) {
+    return password.length >= 6;
+}
+
+function validateName(name) {
+    return name.trim().length >= 3;
+}
+		{
+            return JSON.parse(localStorage.getItem('database_user') || '[]');
+        }
+
+        showRegister.addEventListener('click', () => {
+            registerForm.style.display = registerForm.style.display === 'block' ? 'none' : 'block';
+        });
+
+        registerBtn.addEventListener('click', () => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(regEmail.value)) {
+                regEmail.classList.add('error');
+                alert('Email tidak valid!');
+                return;
+            } else {
+                regEmail.classList.remove('error');
+            }
+            const newUser = {
+                name: document.getElementById('regName').value,
+                email: regEmail.value,
+                password: document.getElementById('regPassword').value
+            };
+            saveUserToDatabase(newUser);
+            alert('Registrasi berhasil! Silakan login.');
+            registerForm.style.display = 'none';
+        });
+
+        loginBtn.addEventListener('click', () => {
+            const users = getUsersFromDatabase();
+            const user = users.find(u => u.email === loginEmail.value && u.password === loginPassword.value);
+            if (user) {
+                loginError.style.display = 'none';
+                welcomeMessage.textContent = 'Selamat datang, ' + user.name + '!';
+                loginBox.style.display = 'none';
+                userBox.style.display = 'block';
+            } else {
+                loginError.style.display = 'block';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            userBox.style.display = 'none';
+            loginBox.style.display = 'block';
+            loginEmail.value = '';
+            loginPassword.value = '';
+        });
+
+        function updateButtonState() {
+            const quoteFilled = quoteInput.value.trim().length > 0;
+            const kategoriSelected = Array.from(kategoriRadios).some(rb => rb.checked);
+            kirimBtn.disabled = !(quoteFilled && kategoriSelected);
+            kirimBtn.style.background = kirimBtn.disabled ? 'gray' : '#444';
+        }
+
+        quoteInput.addEventListener('focus', () => {
+            quoteInput.placeholder = '';
+        });
+        quoteInput.addEventListener('blur', () => {
+            if (quoteInput.value.trim() === '') {
+                quoteInput.placeholder = 'Tulis Kata-kata Anda di sini (maksimal 30 karakter)...';
+            }
+        });
+
+        quoteInput.addEventListener('input', updateButtonState);
+        kategoriRadios.forEach(rb => rb.addEventListener('change', updateButtonState));
+
+        // ========== FACEBOOK LOGIN ==========
+        // 1. Inisialisasi SDK Facebook
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId: 'YOUR_APP_ID', // Ganti dengan App ID Anda
+                cookie: true,
+                xfbml: true,
+                version: 'v18.0'
+            });
+        };
+
+        // 2. Load SDK Facebook
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        // 3. Handle Tombol Facebook
+        document.getElementById('fbLoginBtn').addEventListener('click', function() {
+            document.getElementById('fbLoginOverlay').style.display = 'flex';
+            
+            // Render button Facebook
+            if (typeof FB !== 'undefined') {
+                FB.XFBML.parse(document.getElementById('fb-login-button'));
+            }
+        });
+
+        // 4. Tutup overlay
+        document.getElementById('closeFbLogin').addEventListener('click', function() {
+            document.getElementById('fbLoginOverlay').style.display = 'none';
+        });
+
+        // 5. Fungsi cek status login
+        function checkLoginState() {
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    FB.api('/me', {fields: 'name'}, function(user) {
+                        // Tampilkan nama user
+                        document.getElementById('fbUserName').textContent = user.name;
+                        document.getElementById('fbUserInfo').style.display = 'block';
+                        document.getElementById('fbLoginOverlay').style.display = 'none';
+                        
+                        // Simpan data user
+                        localStorage.setItem('fb_user', JSON.stringify(user));
+                    });
+                }
+            });
+        }
+
+        // 6. Cek apakah sudah login Facebook saat load halaman
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('fb_user')) {
+                const user = JSON.parse(localStorage.getItem('fb_user'));
+                document.getElementById('fbUserName').textContent = user.name;
+                document.getElementById('fbUserInfo').style.display = 'block';
+            }
+        });
+
+        // 7. Render Facebook Login Button
+        document.getElementById('fb-login-button').innerHTML = 
+            '<div class="fb-login-button" ' +
+            'data-width="" ' +
+            'data-size="large" ' +
+            'data-button-type="login_with" ' +
+            'data-layout="default" ' +
+            'data-auto-logout-link="false" ' +
+            'data-use-continue-as="true" ' +
+            'data-scope="public_profile,email" ' +
+            'onlogin="checkLoginState();"></div>';
+    </script>
+</body>
+</html>

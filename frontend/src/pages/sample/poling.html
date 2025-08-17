@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polling - Suara Netizen</title>
+    <!-- Tambahkan Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #fff; }
+        header { text-align: center; padding: 0; position: fixed; top: 0; left: 0; width: 100%; height: 120px; background: #fff; z-index: 1000; overflow: hidden; }
+        header img { width: 100%; height: 100%; object-fit: cover; }
+        nav { display: flex; justify-content: center; background: #fff; flex-wrap: wrap; position: fixed; top: 120px; left: 0; width: 100%; z-index: 1001; overflow-x: auto; white-space: nowrap; padding: 5px 0; }
+        nav a { padding: 10px 15px; text-decoration: none; color: black; font-weight: bold; border-left: 1px solid #ccc; }
+        nav a:first-child { border-left: none; }
+        nav a:hover { color: #0066cc; }
+        
+        /* Gaya untuk teks berkedip */
+        .blinking-container {
+            position: fixed;
+            top: 165px;
+            left: 0;
+            width: 100%;
+            background-color: #0066cc;
+            color: white;
+            padding: 12px 0;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .blinking-text {
+            font-size: 14px;
+            font-weight: bold;
+            animation: blink 1.5s linear infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        /* Konten Polling */
+        .content { 
+            display: flex; 
+            flex-wrap: wrap; 
+            padding: 220px 20px 20px 20px; 
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .left-column {
+            width: 300px;
+            padding: 20px;
+            margin-right: 20px;
+            background: #f5f9ff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .right-column {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .polling-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .polling-header h2 {
+            color: #0066cc;
+            margin-top: 0;
+        }
+        
+        .filter-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .category-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .category-filter label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .search-box {
+            display: flex;
+        }
+        
+        .search-box input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            width: 200px;
+        }
+        
+        .search-box button {
+            padding: 8px 15px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        
+        .polling-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .polling-table th {
+            background-color: #0066cc;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .polling-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        
+        .polling-table tr:hover {
+            background-color: #f5f9ff;
+        }
+        
+        /* Kolom Pembuat */
+        .polling-table th:nth-child(4),
+        .polling-table td:nth-child(4) {
+            width: 15%;
+        }
+        
+        /* Kolom Share */
+        .polling-table th:nth-child(5),
+        .polling-table td:nth-child(5) {
+            width: 15%;
+        }
+        
+        /* Kolom Quote */
+        .polling-table th:nth-child(3),
+        .polling-table td:nth-child(3) {
+            width: 55%;
+        }
+        
+        /* Tombol Share dengan Ikon */
+        .share-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .share-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .share-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .whatsapp {
+            background-color: #25D366;
+        }
+        
+        .facebook {
+            background-color: #3b5998;
+        }
+        
+        .copy-link {
+            background-color: #0066cc;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .pagination button {
+            padding: 8px 15px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .submit-button {
+            display: block;
+            margin: 0 auto 30px;
+            padding: 10px 25px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .submit-button:hover {
+            background-color: #0055aa;
+        }
+        
+        .fb-comments {
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+        .sponsor-img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        footer { 
+            text-align: center; 
+            padding: 20px; 
+            background: #f5f5f5; 
+            margin-top: 20px; 
+            border-top: 1px solid #ddd;
+        }
+        
+        @media(max-width: 768px) { 
+            nav { top: 100px; } 
+            .blinking-container { top: 145px; }
+            .content { 
+                padding-top: 200px; 
+                flex-direction: column; 
+            } 
+            .left-column {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            .filter-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .search-box {
+                width: 100%;
+            }
+            .search-box input {
+                width: 100%;
+            }
+        }
+        
+        @media(max-width: 480px) {
+            header {
+                height: 80px;
+            }
+            nav {
+                top: 80px;
+            }
+            .blinking-container { 
+                top: 125px;
+                padding: 8px 0;
+            }
+            .blinking-text {
+                font-size: 13px;
+            }
+            .content {
+                padding-top: 180px;
+            }
+            nav a {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            .polling-table {
+                font-size: 14px;
+            }
+            .share-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="images/banner1.png" alt="Suara Netizen Header">
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="tentang.html">Tentang Suara Netizen</a>
+        <a href="poling.html">Polling</a>
+        <a href="hasil.html">Hasil Poling</a>
+        <a href="kata_terbit.html">Kata-kata Terbit</a>
+        <a href="tim.html">Tim</a>
+        <a href="galeri.html">Galery</a>
+        <a href="bilboard.html">Penerbitan Billboard</a>
+    </nav>
+    
+    <!-- Blinking Text -->
+    <div class="blinking-container">
+        <div class="blinking-text">
+            Selamat datang di suaranetizen.co.id! Dengan kekuatan kata-kata (The Power of Words) kita tentukan arah dan masa depan bangsa!
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Kolom Kiri untuk Sponsor/Iklan -->
+        <div class="left-column">
+            <h3>Sponsor</h3>
+            <img src="images/sponsor1.jpg" alt="Sponsor 1" class="sponsor-img">
+            <img src="images/sponsor2.jpg" alt="Sponsor 2" class="sponsor-img">
+            <img src="images/sponsor3.jpg" alt="Sponsor 3" class="sponsor-img">
+        </div>
+        
+        <!-- Kolom Kanan untuk Konten Polling -->
+        <div class="right-column">
+            <div class="polling-header">
+                <h2>Pilihan Kata-kata Hari ini</h2>
+            </div>
+            
+            <div class="filter-section">
+                <div class="category-filter">
+                    <label>
+                        <input type="radio" name="category" value="politik" checked> Politik
+                    </label>
+                    <label>
+                        <input type="radio" name="category" value="edukasi"> Edukasi
+                    </label>
+                    <label>
+                        <input type="radio" name="category" value="berita"> Berita Viral
+                    </label>
+                    <label>
+                        <input type="radio" name="category" value="umum"> Umum
+                    </label>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" placeholder="Cari kata-kata...">
+                    <button>Cari</button>
+                </div>
+            </div>
+            
+            <table class="polling-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Pilih</th>
+                        <th>Kata-kata/Quote</th>
+                        <th>Pembuat</th>
+                        <th>Share</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><input type="radio" name="polling-choice"></td>
+                        <td>Pendidikan adalah senjata paling ampuh yang bisa digunakan untuk mengubah dunia. - Nelson Mandela</td>
+                        <td>Rinto Jatmiko</td>
+                        <td>
+                            <div class="share-buttons">
+                                <button class="share-button whatsapp" onclick="shareToWhatsapp(1)" title="Share ke WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="share-button facebook" onclick="shareToFacebook(1)" title="Share ke Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </button>
+                                <button class="share-button copy-link" onclick="copyLink(1)" title="Copy Link">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><input type="radio" name="polling-choice"></td>
+                        <td>Korupsi adalah kejahatan luar biasa yang merusak sendi-sendi kehidupan berbangsa dan bernegara.</td>
+                        <td>Ani Budianto</td>
+                        <td>
+                            <div class="share-buttons">
+                                <button class="share-button whatsapp" onclick="shareToWhatsapp(2)" title="Share ke WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="share-button facebook" onclick="shareToFacebook(2)" title="Share ke Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </button>
+                                <button class="share-button copy-link" onclick="copyLink(2)" title="Copy Link">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><input type="radio" name="polling-choice"></td>
+                        <td>Kebijakan yang baik adalah yang berpihak pada rakyat kecil, bukan pada kepentingan segelintir elite.</td>
+                        <td>Budi Santoso</td>
+                        <td>
+                            <div class="share-buttons">
+                                <button class="share-button whatsapp" onclick="shareToWhatsapp(3)" title="Share ke WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="share-button facebook" onclick="shareToFacebook(3)" title="Share ke Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </button>
+                                <button class="share-button copy-link" onclick="copyLink(3)" title="Copy Link">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><input type="radio" name="polling-choice"></td>
+                        <td>Media sosial seharusnya menjadi alat pemersatu bangsa, bukan alat untuk menyebar kebencian dan hoax.</td>
+                        <td>Citra Dewi</td>
+                        <td>
+                            <div class="share-buttons">
+                                <button class="share-button whatsapp" onclick="shareToWhatsapp(4)" title="Share ke WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="share-button facebook" onclick="shareToFacebook(4)" title="Share ke Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </button>
+                                <button class="share-button copy-link" onclick="copyLink(4)" title="Copy Link">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><input type="radio" name="polling-choice"></td>
+                        <td>Pemimpin sejati adalah yang mendengar suara rakyat dan berani mengambil keputusan untuk kepentingan bersama.</td>
+                        <td>Dian Prasetyo</td>
+                        <td>
+                            <div class="share-buttons">
+                                <button class="share-button whatsapp" onclick="shareToWhatsapp(5)" title="Share ke WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="share-button facebook" onclick="shareToFacebook(5)" title="Share ke Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </button>
+                                <button class="share-button copy-link" onclick="copyLink(5)" title="Copy Link">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="pagination">
+                <button disabled>Sebelumnya</button>
+                <button>Selanjutnya</button>
+            </div>
+            
+            <button class="submit-button" onclick="submitPoll()">Submit Pilihan</button>
+            
+            <!-- Komentar Facebook -->
+            <div class="fb-comments" data-href="https://suaranetizen.co.id/poling.html" data-width="100%" data-numposts="5"></div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 SuaraNetizen. All rights reserved.
+    </footer>
+
+    <script>
+        // Fungsi untuk berbagi ke WhatsApp
+        function shareToWhatsapp(id) {
+            const row = document.querySelector(`.polling-table tr:nth-child(${id})`);
+            const quote = row.querySelector('td:nth-child(3)').textContent;
+            const creator = row.querySelector('td:nth-child(4)').textContent;
+            const url = `https://suaranetizen.co.id/poling.html?quote=${encodeURIComponent(quote)}`;
+            const shareText = `"${quote}"\n\n- ${creator}\n\nBaca selengkapnya: ${url}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+        }
+        
+        // Fungsi untuk berbagi ke Facebook
+        function shareToFacebook(id) {
+            const row = document.querySelector(`.polling-table tr:nth-child(${id})`);
+            const quote = row.querySelector('td:nth-child(3)').textContent;
+            const creator = row.querySelector('td:nth-child(4)').textContent;
+            const url = `https://suaranetizen.co.id/poling.html?quote=${encodeURIComponent(quote)}`;
+            const shareText = `"${quote}" - ${creator}`;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+        }
+        
+        // Fungsi untuk menyalin link
+        function copyLink(id) {
+            const row = document.querySelector(`.polling-table tr:nth-child(${id})`);
+            const quote = row.querySelector('td:nth-child(3)').textContent;
+            const creator = row.querySelector('td:nth-child(4)').textContent;
+            const url = `https://suaranetizen.co.id/poling.html?quote=${encodeURIComponent(quote)}&creator=${encodeURIComponent(creator)}`;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link berhasil disalin!');
+            });
+        }
+        
+        // Fungsi untuk submit polling
+        function submitPoll() {
+            const selected = document.querySelector('input[name="polling-choice"]:checked');
+            if (!selected) {
+                alert('Silakan pilih salah satu kata-kata terlebih dahulu!');
+                return;
+            }
+            
+            const row = selected.closest('tr');
+            const quoteId = row.querySelector('td:first-child').textContent;
+            const quoteText = row.querySelector('td:nth-child(3)').textContent;
+            const creator = row.querySelector('td:nth-child(4)').textContent;
+            
+            // Simulasi pengiriman data (pada implementasi nyata, ganti dengan AJAX/Fetch ke server)
+            alert(`Terima kasih! Anda memilih:\n\n"${quoteText}"\n\n- ${creator}`);
+            
+            /* 
+            // Kode untuk implementasi nyata:
+            fetch('save_poll.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    quoteId: quoteId,
+                    quoteText: quoteText,
+                    creator: creator
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Terima kasih atas partisipasi Anda! Pilihan Anda telah tersimpan.');
+                } else {
+                    alert('Maaf, terjadi kesalahan. Silakan coba lagi.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Maaf, terjadi kesalahan. Silakan coba lagi.');
+            });
+            */
+        }
+        
+        // Load Facebook SDK
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/id_ID/sdk.js#xfbml=1&version=v12.0";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+</body>
+</html>
