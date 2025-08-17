@@ -32,6 +32,7 @@ import TeamListPage from './pages/admin/TeamListPage';
 import TeamPage from './pages/user/TeamPage';
 import GalleryPage from './pages/user/GalleryPage';
 import GalleryAdminPage from './pages/admin/GalleryAdminPage';
+import AdminSponsorPage from './pages/admin/AdminSponsorPage';
 import BillboardForm from './pages/admin/BillboardForm';
 import BillboardPage from './pages/user/BillboardPage';
 
@@ -87,6 +88,8 @@ const AppRoutes = () => (
             <Route path="/admin/teams" element={<AdminLayout><TeamListPage /></AdminLayout>} />
 
             <Route path="/admin/gallery" element={<AdminLayout><GalleryAdminPage /></AdminLayout>} />
+
+            <Route path="/admin/sponsors" element={<AdminLayout><AdminSponsorPage /></AdminLayout>} />
 
             <Route path="/admin/billboard" element={<AdminLayout><BillboardForm /></AdminLayout>} />
 

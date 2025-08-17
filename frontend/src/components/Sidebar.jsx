@@ -104,6 +104,13 @@ export default function Sidebar() {
                 </li>
 
                 <li className="sidebar-menu__item">
+                    <a href="/admin/sponsors" className="sidebar-menu__link">
+                        <span className="icon"><i className="ph ph-handshake"></i></span>
+                        <span className="text">Sponsors</span>
+                    </a>
+                </li>
+
+                <li className="sidebar-menu__item">
                     <a href="/admin/billboard" className="sidebar-menu__link">
                         <span className="icon"><i className="ph ph-chat-circle-text"></i></span>
                         <span className="text">Billboard</span>

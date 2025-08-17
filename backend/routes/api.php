@@ -22,6 +22,7 @@ use App\Http\Controllers\UserController;
 
 
 use App\Http\Controllers\Admin\GalleryController as GalleryController;
+use App\Http\Controllers\Admin\SponsorController as AdminSponsorController;
 
 Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login']);
@@ -57,6 +58,8 @@ Route::prefix('admin')->group(function () {
 
         Route::apiResource('galleries', GalleryController::class);
 
+        Route::apiResource('sponsors', AdminSponsorController::class);
+
         Route::get('billboard', [App\Http\Controllers\Admin\BillboardController::class, 'show']);
         Route::put('billboard', [App\Http\Controllers\Admin\BillboardController::class, 'update']);
 
@@ -88,6 +91,8 @@ Route::prefix('user')->group(function () {
     Route::get('/teams', [TeamController::class, 'index']);
 
     Route::get('/galleries', [GalleryController::class, 'index']);
+
+    Route::get('/sponsors', [App\Http\Controllers\User\SponsorController::class, 'index']);
 
     Route::get('billboard', [App\Http\Controllers\User\BillboardController::class, 'show']);
 

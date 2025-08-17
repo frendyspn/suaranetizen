@@ -1,76 +1,178 @@
-name: Deploy React & Laravel to Shared Hosting
+name: Deploy to Shared Hosting via CI/CD
 
 on:
   push:
-    branches:
-      - main # Jalankan hanya jika ada push ke branch main
+    branches: [ main ]
+  workflow_dispatch: # Manual trigger
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      # 1. Mengunduh kode dari repositori GitHub ke mesin virtual
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      # --- BAGIAN BUILD FRONTEND (REACT) ---
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+    # Frontend Build
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
 
-      - name: Install Frontend Dependencies & Build
-        # Memberi tahu langkah ini untuk berjalan di dalam folder 'frontend'
-        working-directory: ./frontend 
-        run: |
-          echo "Building React App..."
-          npm ci --legacy-peer-deps
-          CI=false npm run build
+    - name: Install frontend dependencies
+      working-directory: ./frontend
+      run: |
+        npm ci --legacy-peer-deps
 
-      # --- BAGIAN BUILD BACKEND (LARAVEL) ---
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2' # Sesuaikan dengan versi PHP di hosting Anda
+    - name: Build frontend
+      working-directory: ./frontend
+      run: |
+        CI=false npm run build
 
-      - name: Install Backend Dependencies (Composer)
-        # Memberi tahu langkah ini untuk berjalan di dalam folder 'backend'
-        working-directory: ./backend
-        run: composer install --no-dev --optimize-autoloader
+    # Backend Setup
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, zip
+        ini-values: post_max_size=256M, upload_max_filesize=256M
+        coverage: none
 
-      # --- BAGIAN DEPLOYMENT (MENGIRIM FILE VIA FTP) ---
-      - name: 🚀 Deploy Frontend to public_html
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./frontend/build/   # Sumber: Hasil build React
-          server-dir: ./public_html/      # Tujuan: Web root
-          # Opsi untuk membersihkan file lama di tujuan sebelum upload
-          clean: true 
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: |
+        composer install --no-dev --optimize-autoloader --no-interaction
 
-      - name: 🚀 Deploy Backend (Core App) to laravel_app
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./backend/           # Sumber: Seluruh folder backend
-          server-dir: ./laravel_app/      # Tujuan: Folder inti di luar web root
-          # Kecualikan folder/file yang tidak perlu atau sensitif
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/public/**
-            **/.env
+    # Prepare deployment structure
+    - name: Prepare deployment files
+      run: |
+        echo "Preparing deployment structure..."
+        
+        # Create deployment directories
+        mkdir -p deploy_temp/public_html/api
+        mkdir -p deploy_temp/laravel_app
+        
+        # Copy frontend build to public_html root
+        cp -r frontend/build/* deploy_temp/public_html/
+        
+        # Copy frontend .htaccess if exists
+        if [ -f "frontend/public/.htaccess" ]; then
+          cp frontend/public/.htaccess deploy_temp/public_html/
+        fi
+        
+        # Copy backend core (excluding public) to laravel_app
+        rsync -av --exclude='public' --exclude='node_modules' --exclude='.git' --exclude='tests' --exclude='.env*' --exclude='storage/logs/*' --exclude='storage/framework/cache/*' --exclude='storage/framework/sessions/*' --exclude='storage/framework/views/*' backend/ deploy_temp/laravel_app/
+        
+        # Copy only backend public folder to api
+        cp -r backend/public/* deploy_temp/public_html/api/
+        
+        # Create production .env in laravel_app
+        if [ -f "backend/.env.production" ]; then
+          cp backend/.env.production deploy_temp/laravel_app/.env
+        fi
+        
+        # Create upload directories
+        mkdir -p deploy_temp/public_html/api/uploads/{banners,galleries,sponsors,teams,billboards}
+        
+        # Create shared hosting specific index.php for api
+        cat > deploy_temp/public_html/api/index.php << 'EOF'
+<?php
 
-      - name: 🚀 Deploy Backend (Public Folder) to api folder
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./backend/public/    # Sumber: Hanya folder public dari Laravel
-          server-dir: ./public_html/api/  # Tujuan: Folder /api di dalam web root
-          clean: true
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
+
+define('LARAVEL_START', microtime(true));
+
+/*
+|--------------------------------------------------------------------------
+| Check If Application Is Under Maintenance
+|--------------------------------------------------------------------------
+*/
+
+if (file_exists(__DIR__.'/../../laravel_app/storage/framework/maintenance.php')) {
+    require __DIR__.'/../../laravel_app/storage/framework/maintenance.php';
+}
+
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+*/
+
+require __DIR__.'/../../laravel_app/vendor/autoload.php';
+
+/*
+|--------------------------------------------------------------------------
+| Turn On The Lights
+|--------------------------------------------------------------------------
+*/
+
+$app = require_once __DIR__.'/../../laravel_app/bootstrap/app.php';
+
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+*/
+
+$kernel = $app->make(Kernel::class);
+
+$response = $kernel->handle(
+    $request = Request::capture()
+)->send();
+
+$kernel->terminate($request, $response);
+EOF
+
+    # Deploy via FTP
+    - name: 🚀 Deploy to Shared Hosting
+      if: github.ref == 'refs/heads/main'
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./deploy_temp/
+        server-dir: ./
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/tests/**
+          **/.DS_Store
+        dry-run: false
+
+    # Post-deployment via SSH (optional)
+    - name: � Post-deployment setup
+      if: github.ref == 'refs/heads/main' && vars.ENABLE_SSH_COMMANDS == 'true'
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT || 22 }}
+        script: |
+          cd laravel_app
+          
+          # Clear caches
+          php artisan config:clear || true
+          php artisan route:clear || true
+          php artisan cache:clear || true
+          php artisan view:clear || true
+          
+          # Cache for production
+          php artisan config:cache || true
+          php artisan route:cache || true
+          php artisan view:cache || true
+          
+          # Create storage link
+          php artisan storage:link || true
+          
+          # Set permissions
+          chmod -R 775 storage/ || true
+          chmod -R 775 bootstrap/cache/ || true
+          chmod -R 775 public_html/api/uploads/ || true
+          
+          echo "Deployment completed successfully!"
