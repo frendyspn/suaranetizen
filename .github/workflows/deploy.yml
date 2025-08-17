@@ -1,0 +1,76 @@
+name: Deploy React & Laravel to Shared Hosting
+
+on:
+  push:
+    branches:
+      - main # Jalankan hanya jika ada push ke branch main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Mengunduh kode dari repositori GitHub ke mesin virtual
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # --- BAGIAN BUILD FRONTEND (REACT) ---
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Frontend Dependencies & Build
+        # Memberi tahu langkah ini untuk berjalan di dalam folder 'frontend'
+        working-directory: ./frontend 
+        run: |
+          echo "Building React App..."
+          npm ci --legacy-peer-deps
+          CI=false npm run build
+
+      # --- BAGIAN BUILD BACKEND (LARAVEL) ---
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2' # Sesuaikan dengan versi PHP di hosting Anda
+
+      - name: Install Backend Dependencies (Composer)
+        # Memberi tahu langkah ini untuk berjalan di dalam folder 'backend'
+        working-directory: ./backend
+        run: composer install --no-dev --optimize-autoloader
+
+      # --- BAGIAN DEPLOYMENT (MENGIRIM FILE VIA FTP) ---
+      - name: 🚀 Deploy Frontend to public_html
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./frontend/build/   # Sumber: Hasil build React
+          server-dir: ./public_html/      # Tujuan: Web root
+          # Opsi untuk membersihkan file lama di tujuan sebelum upload
+          clean: true 
+
+      - name: 🚀 Deploy Backend (Core App) to laravel_app
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./backend/           # Sumber: Seluruh folder backend
+          server-dir: ./laravel_app/      # Tujuan: Folder inti di luar web root
+          # Kecualikan folder/file yang tidak perlu atau sensitif
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/public/**
+            **/.env
+
+      - name: 🚀 Deploy Backend (Public Folder) to api folder
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./backend/public/    # Sumber: Hanya folder public dari Laravel
+          server-dir: ./public_html/api/  # Tujuan: Folder /api di dalam web root
+          clean: true
