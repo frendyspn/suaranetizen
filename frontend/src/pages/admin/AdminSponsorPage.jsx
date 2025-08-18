@@ -40,13 +40,17 @@ const AdminSponsorPage = () => {
 
         try {
             if (editingSponsor) {
+                // Add _method for PUT request in shared hosting
+                submitData.append('_method', 'PUT');
                 await axios.post(`/admin/sponsors/${editingSponsor.id}`, submitData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                alert('Sponsor updated successfully!');
             } else {
                 await axios.post('/admin/sponsors', submitData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                alert('Sponsor created successfully!');
             }
             
             resetForm();
@@ -54,7 +58,7 @@ const AdminSponsorPage = () => {
             setShowModal(false);
         } catch (error) {
             console.error('Error saving sponsor:', error);
-            alert('Error saving sponsor');
+            alert('Error saving sponsor: ' + (error.response?.data?.message || error.message));
         }
     };
 
@@ -64,7 +68,8 @@ const AdminSponsorPage = () => {
             title: sponsor.title,
             image: null
         });
-        setPreviewImage(`${API_BASE_URL}uploads/${sponsor.image}`);
+        // Use the correct URL structure for shared hosting
+        setPreviewImage(sponsor.image_url || `${API_BASE_URL}uploads/sponsors/${sponsor.image}`);
         setShowModal(true);
     };
 
@@ -73,9 +78,10 @@ const AdminSponsorPage = () => {
             try {
                 await axios.delete(`/admin/sponsors/${id}`);
                 fetchSponsors();
+                alert('Sponsor deleted successfully!');
             } catch (error) {
                 console.error('Error deleting sponsor:', error);
-                alert('Error deleting sponsor');
+                alert('Error deleting sponsor: ' + (error.response?.data?.message || error.message));
             }
         }
     };
@@ -143,10 +149,13 @@ const AdminSponsorPage = () => {
                                             <div className="card h-100 shadow-sm">
                                                 <div className="position-relative">
                                                     <img
-                                                        src={`${API_BASE_URL}uploads/${sponsor.image}`}
+                                                        src={sponsor.image_url || `${API_BASE_URL}uploads/sponsors/${sponsor.image}`}
                                                         className="card-img-top"
                                                         alt={sponsor.title}
                                                         style={{ height: '200px', objectFit: 'cover' }}
+                                                        onError={(e) => {
+                                                            e.target.src = '/api/placeholder/300x200?text=No+Image';
+                                                        }}
                                                     />
                                                     <div className="position-absolute top-0 end-0 m-2">
                                                         <div className="btn-group">
