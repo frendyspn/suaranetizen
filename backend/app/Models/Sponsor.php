@@ -23,7 +23,8 @@ class Sponsor extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return asset('uploads/' . $this->image);
+            // For shared hosting structure: domain.com/api/uploads/sponsors/filename.jpg
+            return asset('api/uploads/' . $this->image);
         }
         return null;
     }

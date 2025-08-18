@@ -31,17 +31,8 @@ class SponsorController extends Controller
             $imageName = null;
             
             if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-                
-                // Create uploads directory if not exists
-                $uploadsPath = public_path('uploads');
-                if (!file_exists($uploadsPath)) {
-                    mkdir($uploadsPath, 0755, true);
-                }
-                
-                // Move file to public/uploads directory
-                $image->move($uploadsPath, $imageName);
+                // Store file using public_uploads disk for shared hosting
+                $imageName = $request->file('image')->store('sponsors', 'public_uploads');
             }
 
             $sponsor = Sponsor::create([
@@ -79,22 +70,12 @@ class SponsorController extends Controller
 
             if ($request->hasFile('image')) {
                 // Delete old image if exists
-                if ($sponsor->image && file_exists(public_path('uploads/' . $sponsor->image))) {
-                    unlink(public_path('uploads/' . $sponsor->image));
+                if ($sponsor->image && Storage::disk('public_uploads')->exists($sponsor->image)) {
+                    Storage::disk('public_uploads')->delete($sponsor->image);
                 }
 
-                $image = $request->file('image');
-                $imageName = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-                
-                // Create uploads directory if not exists
-                $uploadsPath = public_path('uploads');
-                if (!file_exists($uploadsPath)) {
-                    mkdir($uploadsPath, 0755, true);
-                }
-
-                // Move new file
-                $image->move($uploadsPath, $imageName);
-                $sponsor->image = $imageName;
+                // Store new image using public_uploads disk
+                $sponsor->image = $request->file('image')->store('sponsors', 'public_uploads');
             }
 
             $sponsor->save();
@@ -111,8 +92,8 @@ class SponsorController extends Controller
             $sponsor = Sponsor::findOrFail($id);
 
             // Delete image file if exists
-            if ($sponsor->image && file_exists(public_path('uploads/' . $sponsor->image))) {
-                unlink(public_path('uploads/' . $sponsor->image));
+            if ($sponsor->image && Storage::disk('public_uploads')->exists($sponsor->image)) {
+                Storage::disk('public_uploads')->delete($sponsor->image);
             }
 
             $sponsor->delete();

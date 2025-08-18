@@ -10,6 +10,6 @@ class Banner extends Model
 
     public function getImageUrlAttribute()
     {
-        return asset('uploads/'.$this->image_path);
+        return asset('api/uploads/'.$this->image_path);
     }
 }

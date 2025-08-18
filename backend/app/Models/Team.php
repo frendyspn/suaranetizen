@@ -17,4 +17,14 @@ class Team extends Model
             $model->id = (string) Str::uuid();
         });
     }
+    
+    // Accessor untuk URL foto penuh
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo) {
+            // For shared hosting structure: domain.com/api/uploads/teams/filename.jpg
+            return asset('api/uploads/' . $this->photo);
+        }
+        return null;
+    }
 }
