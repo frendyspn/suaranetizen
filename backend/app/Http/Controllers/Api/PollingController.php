@@ -40,13 +40,13 @@ class PollingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kalimat' => 'required|string|max:30',
+            'kalimat' => 'required|string|max:210',
             'kategori_ids' => 'required|array|min:1',
             'kategori_ids.*' => 'exists:kategoris,id',
             'custom_name' => 'required|string|max:100'
         ], [
             'kalimat.required' => 'Kata-kata tidak boleh kosong',
-            'kalimat.max' => 'Kata-kata maksimal 30 karakter',
+            'kalimat.max' => 'Kata-kata maksimal 210 karakter',
             'kategori_ids.required' => 'Pilih minimal satu kategori',
             'kategori_ids.min' => 'Pilih minimal satu kategori',
             'kategori_ids.*.exists' => 'Kategori yang dipilih tidak valid',
@@ -80,13 +80,13 @@ class PollingController extends Controller
     public function storeFree(Request $request)
     {
         $request->validate([
-            'kalimat' => 'required|string|max:30',
+            'kalimat' => 'required|string|max:210',
             'kategori_ids' => 'required|array|min:1',
             'kategori_ids.*' => 'exists:kategoris,id',
             'custom_name' => 'required|string|max:100'
         ], [
             'kalimat.required' => 'Kata-kata tidak boleh kosong',
-            'kalimat.max' => 'Kata-kata maksimal 30 karakter',
+            'kalimat.max' => 'Kata-kata maksimal 210 karakter',
             'kategori_ids.required' => 'Pilih minimal satu kategori',
             'kategori_ids.min' => 'Pilih minimal satu kategori',
             'kategori_ids.*.exists' => 'Kategori yang dipilih tidak valid',

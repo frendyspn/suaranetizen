@@ -15,7 +15,7 @@ const HomePage = () => {
         kategori_ids: [], 
         custom_name: ''
     });
-    const [remainingChars, setRemainingChars] = useState(30);
+    const [remainingChars, setRemainingChars] = useState(210);
     const [error, setError] = useState('');
     const [showLogin, setShowLogin] = useState(true);
     const [showRegister, setShowRegister] = useState(false);
@@ -68,7 +68,7 @@ const HomePage = () => {
         }));
 
         if (name === 'kalimat') {
-            setRemainingChars(30 - value.length);
+            setRemainingChars(210 - value.length);
         }
     };
 
@@ -115,8 +115,8 @@ const HomePage = () => {
             return;
         }
 
-        if (form.kalimat.length > 30) {
-            setError('Kata-kata maksimal 30 karakter');
+        if (form.kalimat.length > 210) {
+            setError('Kata-kata maksimal 210 karakter');
             return;
         }
 
@@ -149,8 +149,8 @@ const HomePage = () => {
             return;
         }
 
-        if (form.kalimat.length > 30) {
-            setError('Kata-kata maksimal 30 karakter');
+        if (form.kalimat.length > 210) {
+            setError('Kata-kata maksimal 210 karakter');
             return;
         }
 
@@ -363,8 +363,8 @@ const HomePage = () => {
                         value={form.kalimat}
                         onChange={handleChange}
                         name="kalimat"
-                        maxLength={30}
-                        placeholder="Tulis Kata-kata Anda di sini (maksimal 30 karakter)..."
+                        maxLength={210}
+                        placeholder="Tulis Kata-kata Anda di sini (maksimal 210 karakter)..."
                         style={{
                             width: '100%',
                             margin: '5px 0',
@@ -379,12 +379,12 @@ const HomePage = () => {
                         onFocus={(e) => e.target.placeholder = ''}
                         onBlur={(e) => {
                             if (e.target.value.trim() === '') {
-                                e.target.placeholder = 'Tulis Kata-kata Anda di sini (maksimal 30 karakter)...';
+                                e.target.placeholder = 'Tulis Kata-kata Anda di sini (maksimal 210 karakter)...';
                             }
                         }}
                     />
                     <div style={{ textAlign: 'right', fontSize: '12px', color: '#666', marginTop: '-10px', marginBottom: '10px' }}>
-                        <span>{form.kalimat.length}</span>/30 karakter
+                        <span>{form.kalimat.length}</span>/210 karakter
                     </div>
 
                     <input

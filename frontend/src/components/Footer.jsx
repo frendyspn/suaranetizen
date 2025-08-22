@@ -7,7 +7,7 @@ const Footer = () => {
 
     return (
         <footer className="dashboard-footer p-4 text-center text-sm text-gray-500 border-top mt-5">
-            {settings.site_logo && (
+            {/* {settings.site_logo && (
                 <img
                     src={`${API_BASE_URL}uploads/${settings.site_logo}`}
                     alt={settings.site_title || 'Logo'}
@@ -17,7 +17,7 @@ const Footer = () => {
             <div>
                 <strong>{settings.site_title || 'SuaraNetizen'}</strong>
             </div>
-            © {new Date().getFullYear()} SuaraNetizen. All rights reserved.
+            © {new Date().getFullYear()} SuaraNetizen. All rights reserved. */}
         </footer>
     );
 };
